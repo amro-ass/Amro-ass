@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة إحصائيات - ثانوية عمرو بن العاص</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0a0f1e;
+    --bg2: #0f1628;
+    --card: #131c35;
+    --card2: #1a2545;
+    --border: #1e2d50;
+    --accent1: #00d4ff;
+    --accent2: #7b61ff;
+    --accent3: #ff6b6b;
+    --accent4: #00e676;
+    --accent5: #ffb300;
+    --text: #e8eaf6;
+    --muted: #8892b0;
+    --gold: #ffd700;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Cairo', 'Tajawal', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Animated background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse 80% 50% at 10% 10%, rgba(0,212,255,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 90% 80%, rgba(123,97,255,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 60% at 50% 50%, rgba(0,230,118,0.03) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper { position: relative; z-index: 1; max-width: 1600px; margin: 0 auto; padding: 24px; }
+
+  /* Header */
+  header {
+    text-align: center;
+    padding: 48px 24px 36px;
+    position: relative;
+  }
+  header::after {
+    content: '';
+    display: block;
+    width: 160px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--accent1), var(--accent2), transparent);
+    margin: 20px auto 0;
+    border-radius: 2px;
+  }
+  .school-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(0,212,255,0.08);
+    border: 1px solid rgba(0,212,255,0.2);
+    border-radius: 50px;
+    padding: 6px 20px;
+    font-size: 12px;
+    color: var(--accent1);
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+  }
+  h1 {
+    font-size: clamp(24px, 4vw, 42px);
+    font-weight: 900;
+    background: linear-gradient(135deg, #ffffff 30%, var(--accent1) 60%, var(--accent2) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+  .subtitle { color: var(--muted); font-size: 14px; font-weight: 400; }
+
+  /* Navigation tabs */
+  .tabs {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 32px 0 24px;
+  }
+  .tab {
+    padding: 9px 22px;
+    border-radius: 50px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--muted);
+    font-family: 'Cairo', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    white-space: nowrap;
+  }
+  .tab:hover { border-color: var(--accent1); color: var(--accent1); }
+  .tab.active {
+    background: linear-gradient(135deg, var(--accent1), var(--accent2));
+    border-color: transparent;
+    color: #fff;
+    box-shadow: 0 4px 20px rgba(0,212,255,0.3);
+  }
+
+  /* Sections */
+  .section { display: none; }
+  .section.active { display: block; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+
+  /* Summary cards */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .stat-card:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--color, var(--accent1));
+  }
+  .stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .stat-value { font-size: 32px; font-weight: 900; color: var(--color, var(--accent1)); line-height: 1; }
+  .stat-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  /* Chart cards */
+  .charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 20px;
+    margin-bottom: 28px;
+  }
+  .chart-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px;
+    transition: box-shadow 0.3s;
+  }
+  .chart-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+  .chart-card.wide { grid-column: 1 / -1; }
+  .chart-title {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 18px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .chart-title .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent1);
+    flex-shrink: 0;
+  }
+  .chart-wrap { position: relative; height: 240px; }
+  .chart-wrap.tall { height: 300px; }
+
+  /* Top students table */
+  .top-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .top-table th {
+    background: rgba(0,212,255,0.08);
+    color: var(--accent1);
+    font-weight: 700;
+    padding: 12px 16px;
+    text-align: right;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .top-table td {
+    padding: 11px 16px;
+    border-bottom: 1px solid rgba(30,45,80,0.5);
+    color: var(--text);
+  }
+  .top-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .rank-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .rank-1 { background: #ffd700; color: #000; }
+  .rank-2 { background: #c0c0c0; color: #000; }
+  .rank-3 { background: #cd7f32; color: #fff; }
+  .rank-other { background: var(--card2); color: var(--muted); }
+  .score-pill {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 12px;
+  }
+  .score-high { background: rgba(0,230,118,0.15); color: var(--accent4); border: 1px solid rgba(0,230,118,0.3); }
+  .score-mid  { background: rgba(0,212,255,0.12); color: var(--accent1); border: 1px solid rgba(0,212,255,0.25); }
+
+  /* Grade distribution bar */
+  .dist-bar {
+    display: flex;
+    height: 36px;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 12px 0;
+    gap: 2px;
+  }
+  .dist-seg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: rgba(0,0,0,0.8);
+    transition: flex 0.8s ease;
+    min-width: 2px;
+  }
+  .dist-legend {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+
+  /* Class comparison */
+  .classes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+  .class-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+  .class-card:hover { border-color: rgba(0,212,255,0.3); transform: translateY(-2px); }
+  .class-name {
+    font-size: 16px; font-weight: 800;
+    color: var(--accent1); margin-bottom: 14px;
+  }
+  .class-avg {
+    font-size: 28px; font-weight: 900;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .avg-label { font-size: 11px; color: var(--muted); margin-bottom: 12px; }
+  .mini-progress {
+    background: rgba(255,255,255,0.08);
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+  .mini-progress-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--accent1), var(--accent2));
+    transition: width 1s ease;
+  }
+  .fail-rate { font-size: 11px; }
+  .fail-rate span { color: var(--accent3); font-weight: 700; }
+
+  /* Subject averages */
+  .subj-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(30,45,80,0.4);
+  }
+  .subj-name { font-size: 12px; color: var(--muted); min-width: 110px; text-align: right; }
+  .subj-bar-wrap { flex: 1; background: rgba(255,255,255,0.06); height: 8px; border-radius: 4px; overflow: hidden; }
+  .subj-bar { height: 100%; border-radius: 4px; transition: width 1s ease; }
+  .subj-val { font-size: 12px; font-weight: 700; min-width: 36px; text-align: left; }
+
+  /* Summary overview section */
+  .overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-bottom: 28px;
+  }
+  .level-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .level-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(0,212,255,0.04), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .level-card:hover { border-color: rgba(0,212,255,0.3); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
+  .level-card:hover::after { opacity: 1; }
+  .level-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+  .level-badge {
+    font-size: 11px; font-weight: 700; padding: 4px 12px;
+    border-radius: 50px;
+    background: rgba(0,212,255,0.1);
+    color: var(--accent1);
+    border: 1px solid rgba(0,212,255,0.2);
+  }
+  .level-total { font-size: 28px; font-weight: 900; }
+  .level-total small { font-size: 12px; font-weight: 400; color: var(--muted); }
+  .level-name { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+  .level-meta { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+  .pass-bar { display: flex; height: 8px; border-radius: 4px; overflow: hidden; margin-bottom: 6px; }
+  .pass-seg { transition: flex 0.8s ease; }
+  .pass-label { display: flex; justify-content: space-between; font-size: 11px; }
+
+  footer {
+    text-align: center;
+    padding: 32px 0 16px;
+    color: var(--muted);
+    font-size: 12px;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="school-badge">📊 تقرير إحصائي شامل</div>
+    <h1>ثانوية عمرو بن العاص التأهيلية</h1>
+    <p class="subtitle">الأكاديمية الجهوية للتربية والتكوين لجهة سوس ماسة  |  المديرية الإقليمية لأكادير إداوتنان</p>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('overview')">نظرة عامة</button>
+    <button class="tab" onclick="showTab('bacspf')">2BACSPF</button>
+    <button class="tab" onclick="showTab('bacsvtf')">2BACSVTF</button>
+    <button class="tab" onclick="showTab('baclf')">2BACLF</button>
+    <button class="tab" onclick="showTab('bacsef')">1BACSEF</button>
+    <button class="tab" onclick="showTab('bacshf')">1BACSHF</button>
+    <button class="tab" onclick="showTab('tcsf')">TCSF</button>
+    <button class="tab" onclick="showTab('tclshf')">TCLSHF</button>
+  </div>
+
+  <!-- ====== OVERVIEW ====== -->
+  <div id="overview" class="section active">
+    <div class="stats-grid">
+      <div class="stat-card" style="--color:#00d4ff">
+        <div class="stat-label">إجمالي التلاميذ</div>
+        <div class="stat-value">1259</div>
+        <div class="stat-sub">في جميع المستويات</div>
+      </div>
+      <div class="stat-card" style="--color:#00e676">
+        <div class="stat-label">ناجحون (أكثر من 10)</div>
+        <div class="stat-value">1065</div>
+        <div class="stat-sub">85% من الإجمالي</div>
+      </div>
+      <div class="stat-card" style="--color:#ff6b6b">
+        <div class="stat-label">راسبون (أقل من 10)</div>
+        <div class="stat-value">194</div>
+        <div class="stat-sub">15% من الإجمالي</div>
+      </div>
+      <div class="stat-card" style="--color:#ffb300">
+        <div class="stat-label">عدد الأقسام</div>
+        <div class="stat-value">35</div>
+        <div class="stat-sub">7 مستويات دراسية</div>
+      </div>
+      <div class="stat-card" style="--color:#7b61ff">
+        <div class="stat-label">أعلى معدل</div>
+        <div class="stat-value">19.43</div>
+        <div class="stat-sub">البداوي رميساء · 2BACSPF</div>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card wide">
+        <div class="chart-title"><span class="dot"></span>مقارنة نسب النجاح والرسوب لكل مستوى</div>
+        <div class="chart-wrap tall">
+          <canvas id="overviewPassChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title"><span class="dot" style="background:var(--accent4)"></span>توزيع التلاميذ حسب المستوى</div>
+        <div class="chart-wrap">
+          <canvas id="overviewDistChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title"><span class="dot" style="background:var(--accent5)"></span>متوسط معدل القسم لكل مستوى</div>
+        <div class="chart-wrap">
+          <canvas id="overviewAvgChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="overview-grid">
+      <!-- Level cards -->
+      <div class="level-card" onclick="showTab('bacspf')">
+        <div class="level-header">
+          <div>
+            <div class="level-name">2BACSPF</div>
+            <div class="level-meta">7 أقسام · علوم فيزيائية</div>
+          </div>
+          <div class="level-badge">2BAC</div>
+        </div>
+        <div class="level-total">241 <small>تلميذ</small></div>
+        <div class="pass-bar" style="margin-top:14px">
+          <div class="pass-seg" style="flex:92;background:var(--accent4)"></div>
+          <div class="pass-seg" style="flex:8;background:var(--accent3)"></div>
+        </div>
+        <div class="pass-label"><span style="color:var(--accent4)">نجاح 92%</span><span style="color:var(--accent3)">رسوب 8%</span></div>
+      </div>
+      <div class="level-card" onclick="showTab('bacsvtf')">
+        <div class="level-header">
+          <div>
+            <div class="level-name">2BACSVTF</div>
+            <div class="level-meta">3 أقسام · علوم الحياة</div>
+          </div>
+          <div class="level-badge">2BAC</div>
+        </div>
+        <div class="level-total">94 <small>تلميذ</small></div>
+        <div class="pass-bar" style="margin-top:14px">
+          <div class="pass-seg" style="flex:91;background:var(--accent4)"></div>
+          <div class="pass-seg" style="flex:9;background:var(--accent3)"></div>
+        </div>
+        <div class="pass-label"><span style="color:var(--accent4)">نجاح 91%</span><span style="color:var(--accent3)">رسوب 9%</span></div>
+      </div>
+      <div class="level-card" onclick="showTab('baclf')">
+        <div class="level-header">
+          <div>
+            <div class="level-name">2BACLF</div>
+            <div class="level-meta">4 أقسام · آداب وعلوم إنسانية</div>
+          </div>
+          <div class="level-badge">2BAC</div>
+        </div>
+        <div class="level-total">133 <small>تلميذ</small></div>
+        <div class="pass-bar" style="margin-top:14px">
+          <div class="pass-seg" style="flex:95;background:var(--accent4)"></div>
+          <div class="pass-seg" style="flex:5;background:var(--accent3)"></div>
+        </div>
+        <div class="pass-label"><span style="color:var(--accent4)">نجاح 95%</span><span style="color:var(--accent3)">رسوب 5%</span></div>
+      </div>
+      <div class="level-card" onclick="showTab('bacsef')">
+        <div class="level-header">
+          <div>
+            <div class="level-name">1BACSEF</div>
+            <div class="level-meta">8 أقسام · علوم اقتصادية</div>
+          </div>
+          <div class="level-badge" style="background:rgba(123,97,255,0.1);color:var(--accent2);border-color:rgba(123,97,255,0.2)">1BAC</div>
+        </div>
+        <div class="level-total">277 <small>تلميذ</small></div>
+        <div class="pass-bar" style="margin-top:14px">
+          <div class="pass-seg" style="flex:67;background:var(--accent4)"></div>
+          <div class="pass-seg" style="flex:33;background:var(--accent3)"></div>
+        </div>
+        <div class="pass-label"><span style="color:var(--accent4)">نجاح 67%</span><span style="color:var(--accent3)">رسوب 33%</span></div>
+      </div>
+      <div class="level-card" onclick="showTab('bacshf')">
+        <div class="level-header">
+          <div>
+            <div class="level-name">1BACSHF</div>
+            <div class="level-meta">5 أقسام · علوم إنسانية</div>
+          </div>
+          <div class="level-badge" style="background:rgba(123,97,255,0.1);color:var(--accent2);border-color:rgba(123,97,255,0.2)">1BAC</div>
+        </div>
+        <div class="level-total">195 <small>تلميذ</small></div>
+        <div class="pass-bar" style="margin-top:14px">
+          <div class="pass-seg" style="flex:94;background:var(--accent4)"></div>
+          <div class="pass-seg" style="flex:6;background:var(--accent3)"></div>
+        </div>
+        <div class="pass-label"><span style="color:var(--accent4)">نجاح 94%</span><span style="color:var(--accent3)">رسوب 6%</span></div>
+      </div>
+      <div class="level-card" onclick="showTab('tcsf')">
+        <div class="level-header">
+          <div>
+            <div class="level-name">TCSF</div>
+            <div class="level-meta">8 أقسام · جذع مشترك</div>
+          </div>
+          <div class="level-badge" style="background:rgba(255,179,0,0.1);color:var(--accent5);border-color:rgba(255,179,0,0.2)">TC</div>
+        </div>
+        <div class="level-total">262 <small>تلميذ</small></div>
+        <div class="pass-bar" style="margin-top:14px">
+          <div class="pass-seg" style="flex:87;background:var(--accent4)"></div>
+          <div class="pass-seg" style="flex:13;background:var(--accent3)"></div>
+        </div>
+        <div class="pass-label"><span style="color:var(--accent4)">نجاح 87%</span><span style="color:var(--accent3)">رسوب 13%</span></div>
+      </div>
+      <div class="level-card" onclick="showTab('tclshf')">
+        <div class="level-header">
+          <div>
+            <div class="level-name">TCLSHF</div>
+            <div class="level-meta">2 قسمان · جذع مشترك آداب</div>
+          </div>
+          <div class="level-badge" style="background:rgba(255,179,0,0.1);color:var(--accent5);border-color:rgba(255,179,0,0.2)">TC</div>
+        </div>
+        <div class="level-total">72 <small>تلميذ</small></div>
+        <div class="pass-bar" style="margin-top:14px">
+          <div class="pass-seg" style="flex:76;background:var(--accent4)"></div>
+          <div class="pass-seg" style="flex:24;background:var(--accent3)"></div>
+        </div>
+        <div class="pass-label"><span style="color:var(--accent4)">نجاح 76%</span><span style="color:var(--accent3)">رسوب 24%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== 2BACSPF ====== -->
+  <div id="bacspf" class="section">
+    <div class="stats-grid">
+      <div class="stat-card" style="--color:#00d4ff"><div class="stat-label">إجمالي التلاميذ</div><div class="stat-value">241</div><div class="stat-sub">7 أقسام</div></div>
+      <div class="stat-card" style="--color:#00e676"><div class="stat-label">ناجحون</div><div class="stat-value">221</div><div class="stat-sub">92%</div></div>
+      <div class="stat-card" style="--color:#ff6b6b"><div class="stat-label">راسبون</div><div class="stat-value">20</div><div class="stat-sub">8%</div></div>
+      <div class="stat-card" style="--color:#ffd700"><div class="stat-label">أعلى معدل</div><div class="stat-value">19.43</div><div class="stat-sub">البداوي رميساء</div></div>
+    </div>
+
+    <!-- Grade distribution -->
+    <div class="chart-card" style="margin-bottom:20px">
+      <div class="chart-title"><span class="dot"></span>توزيع الدرجات</div>
+      <div class="dist-bar">
+        <div class="dist-seg" style="flex:8;background:#ff4757">8%</div>
+        <div class="dist-seg" style="flex:23;background:#ff6b35">23%</div>
+        <div class="dist-seg" style="flex:32;background:#ffa502">32%</div>
+        <div class="dist-seg" style="flex:20;background:#7bed9f">20%</div>
+        <div class="dist-seg" style="flex:11;background:#2ed573">11%</div>
+        <div class="dist-seg" style="flex:6;background:#00d4ff">6%</div>
+      </div>
+      <div class="dist-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#ff4757"></div>أقل من 10 (8%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#ff6b35"></div>10-12 (23%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#ffa502"></div>12-14 (32%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#7bed9f"></div>14-16 (20%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#2ed573"></div>16-18 (11%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#00d4ff"></div>أكثر من 18 (6%)</div>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-title"><span class="dot"></span>معدل القسم لكل فصل</div>
+        <div class="chart-wrap"><canvas id="bacspfClassChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title"><span class="dot" style="background:var(--accent3)"></span>نسبة الراسبين لكل قسم</div>
+        <div class="chart-wrap"><canvas id="bacspfFailChart"></canvas></div>
+      </div>
+      <div class="chart-card wide">
+        <div class="chart-title"><span class="dot" style="background:var(--accent5)"></span>متوسط المعدلات حسب المادة</div>
+        <div class="chart-wrap tall"><canvas id="bacspfSubjChart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Top 10 students -->
+    <div class="chart-card">
+      <div class="chart-title"><span class="dot" style="background:var(--gold)"></span>التلاميذ العشر الأوائل بالمستوى</div>
+      <table class="top-table">
+        <thead><tr><th>#</th><th>الاسم والنسب</th><th>القسم</th><th>المعدل</th></tr></thead>
+        <tbody>
+          <tr><td><span class="rank-badge rank-1">1</span></td><td>البداوي رميساء</td><td>2BACSPF-3</td><td><span class="score-pill score-high">19.43</span></td></tr>
+          <tr><td><span class="rank-badge rank-2">2</span></td><td>بهمدين عمر</td><td>2BACSPF-1</td><td><span class="score-pill score-high">19.41</span></td></tr>
+          <tr><td><span class="rank-badge rank-3">3</span></td><td>صاهير ليلى</td><td>2BACSPF-3</td><td><span class="score-pill score-high">19.08</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">4</span></td><td>الرساسي بسملة</td><td>2BACSPF-4</td><td><span class="score-pill score-mid">18.93</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">5</span></td><td>الكردم احسان</td><td>2BACSPF-2</td><td><span class="score-pill score-mid">18.86</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">6</span></td><td>شلح ابتسام</td><td>2BACSPF-7</td><td><span class="score-pill score-mid">18.74</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">7</span></td><td>ازاو ملاك</td><td>2BACSPF-6</td><td><span class="score-pill score-mid">18.64</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">8</span></td><td>بونص خلود</td><td>2BACSPF-4</td><td><span class="score-pill score-mid">18.49</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">9</span></td><td>امرير سارة</td><td>2BACSPF-5</td><td><span class="score-pill score-mid">18.47</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">10</span></td><td>بوهور رضى</td><td>2BACSPF-6</td><td><span class="score-pill score-mid">18.32</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ====== 2BACSVTF ====== -->
+  <div id="bacsvtf" class="section">
+    <div class="stats-grid">
+      <div class="stat-card" style="--color:#00d4ff"><div class="stat-label">إجمالي التلاميذ</div><div class="stat-value">94</div><div class="stat-sub">3 أقسام</div></div>
+      <div class="stat-card" style="--color:#00e676"><div class="stat-label">ناجحون</div><div class="stat-value">86</div><div class="stat-sub">91%</div></div>
+      <div class="stat-card" style="--color:#ff6b6b"><div class="stat-label">راسبون</div><div class="stat-value">8</div><div class="stat-sub">9%</div></div>
+      <div class="stat-card" style="--color:#ffd700"><div class="stat-label">أعلى معدل</div><div class="stat-value">19.33</div><div class="stat-sub">اوبيعلي مريم</div></div>
+    </div>
+
+    <div class="chart-card" style="margin-bottom:20px">
+      <div class="chart-title"><span class="dot"></span>توزيع الدرجات</div>
+      <div class="dist-bar">
+        <div class="dist-seg" style="flex:9;background:#ff4757">9%</div>
+        <div class="dist-seg" style="flex:29;background:#ff6b35">29%</div>
+        <div class="dist-seg" style="flex:28;background:#ffa502">28%</div>
+        <div class="dist-seg" style="flex:22;background:#7bed9f">22%</div>
+        <div class="dist-seg" style="flex:11;background:#2ed573">11%</div>
+        <div class="dist-seg" style="flex:2;background:#00d4ff">2%</div>
+      </div>
+      <div class="dist-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#ff4757"></div>أقل من 10 (9%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#ff6b35"></div>10-12 (29%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#ffa502"></div>12-14 (28%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#7bed9f"></div>14-16 (22%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#2ed573"></div>16-18 (11%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#00d4ff"></div>أكثر من 18 (2%)</div>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-title"><span class="dot"></span>معدل القسم</div>
+        <div class="chart-wrap"><canvas id="bacsvtfClassChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title"><span class="dot" style="background:var(--accent3)"></span>نسبة الراسبين</div>
+        <div class="chart-wrap"><canvas id="bacsvtfFailChart"></canvas></div>
+      </div>
+      <div class="chart-card wide">
+        <div class="chart-title"><span class="dot" style="background:var(--accent5)"></span>متوسط المعدلات حسب المادة</div>
+        <div class="chart-wrap tall"><canvas id="bacsvtfSubjChart"></canvas></div>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-title"><span class="dot" style="background:var(--gold)"></span>التلاميذ العشر الأوائل بالمستوى</div>
+      <table class="top-table">
+        <thead><tr><th>#</th><th>الاسم والنسب</th><th>القسم</th><th>المعدل</th></tr></thead>
+        <tbody>
+          <tr><td><span class="rank-badge rank-1">1</span></td><td>اوبيعلي مريم</td><td>2BACSVTF-3</td><td><span class="score-pill score-high">19.33</span></td></tr>
+          <tr><td><span class="rank-badge rank-2">2</span></td><td>سفع فتيحة</td><td>2BACSVTF-2</td><td><span class="score-pill score-high">18.82</span></td></tr>
+          <tr><td><span class="rank-badge rank-3">3</span></td><td>بلبو طه</td><td>2BACSVTF-1</td><td><span class="score-pill score-mid">17.38</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">4</span></td><td>أيت قاسي إكرام</td><td>2BACSVTF-2</td><td><span class="score-pill score-mid">17.33</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">5</span></td><td>البوري كوثر</td><td>2BACSVTF-1</td><td><span class="score-pill score-mid">17.08</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">6</span></td><td>الطبجي شيماء</td><td>2BACSVTF-3</td><td><span class="score-pill score-mid">16.97</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">7</span></td><td>بودلال كوثر</td><td>2BACSVTF-2</td><td><span class="score-pill score-mid">16.65</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">8</span></td><td>اكوز رقية</td><td>2BACSVTF-2</td><td><span class="score-pill score-mid">16.57</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">9</span></td><td>ابلقاسم أسماء</td><td>2BACSVTF-3</td><td><span class="score-pill score-mid">16.55</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">10</span></td><td>اشنافة فاطمة الزهراء</td><td>2BACSVTF-3</td><td><span class="score-pill score-mid">16.55</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ====== 2BACLF ====== -->
+  <div id="baclf" class="section">
+    <div class="stats-grid">
+      <div class="stat-card" style="--color:#00d4ff"><div class="stat-label">إجمالي التلاميذ</div><div class="stat-value">133</div><div class="stat-sub">4 أقسام</div></div>
+      <div class="stat-card" style="--color:#00e676"><div class="stat-label">ناجحون</div><div class="stat-value">126</div><div class="stat-sub">95%</div></div>
+      <div class="stat-card" style="--color:#ff6b6b"><div class="stat-label">راسبون</div><div class="stat-value">7</div><div class="stat-sub">5%</div></div>
+      <div class="stat-card" style="--color:#ffd700"><div class="stat-label">أعلى معدل</div><div class="stat-value">18.05</div><div class="stat-sub">شاهي مريم</div></div>
+    </div>
+
+    <div class="chart-card" style="margin-bottom:20px">
+      <div class="chart-title"><span class="dot"></span>توزيع الدرجات</div>
+      <div class="dist-bar">
+        <div class="dist-seg" style="flex:5;background:#ff4757">5%</div>
+        <div class="dist-seg" style="flex:15;background:#ff6b35">15%</div>
+        <div class="dist-seg" style="flex:44;background:#ffa502">44%</div>
+        <div class="dist-seg" style="flex:26;background:#7bed9f">26%</div>
+        <div class="dist-seg" style="flex:8;background:#2ed573">8%</div>
+        <div class="dist-seg" style="flex:1;background:#00d4ff">1%</div>
+      </div>
+      <div class="dist-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#ff4757"></div>أقل من 10 (5%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#ff6b35"></div>10-12 (15%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#ffa502"></div>12-14 (44%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#7bed9f"></div>14-16 (26%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#2ed573"></div>16-18 (8%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#00d4ff"></div>أكثر من 18 (1%)</div>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-title"><span class="dot"></span>معدل القسم</div>
+        <div class="chart-wrap"><canvas id="baclfClassChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title"><span class="dot" style="background:var(--accent3)"></span>نسبة الراسبين</div>
+        <div class="chart-wrap"><canvas id="baclfFailChart"></canvas></div>
+      </div>
+      <div class="chart-card wide">
+        <div class="chart-title"><span class="dot" style="background:var(--accent5)"></span>متوسط المعدلات حسب المادة</div>
+        <div class="chart-wrap tall"><canvas id="baclfSubjChart"></canvas></div>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-title"><span class="dot" style="background:var(--gold)"></span>التلاميذ العشر الأوائل</div>
+      <table class="top-table">
+        <thead><tr><th>#</th><th>الاسم والنسب</th><th>القسم</th><th>المعدل</th></tr></thead>
+        <tbody>
+          <tr><td><span class="rank-badge rank-1">1</span></td><td>شاهي مريم</td><td>2BACLF-2</td><td><span class="score-pill score-high">18.05</span></td></tr>
+          <tr><td><span class="rank-badge rank-2">2</span></td><td>اديبر فاطمة الزهراء</td><td>2BACLF-3</td><td><span class="score-pill score-mid">17.48</span></td></tr>
+          <tr><td><span class="rank-badge rank-3">3</span></td><td>اونات خديجة</td><td>2BACLF-2</td><td><span class="score-pill score-mid">17.36</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">4</span></td><td>حافيظي أميمة</td><td>2BACLF-1</td><td><span class="score-pill score-mid">17.20</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">5</span></td><td>صابر نهيلة</td><td>2BACLF-2</td><td><span class="score-pill score-mid">16.80</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">6</span></td><td>الكيرد خديجة</td><td>2BACLF-2</td><td><span class="score-pill score-mid">16.64</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">7</span></td><td>بوعدل مريم</td><td>2BACLF-1</td><td><span class="score-pill score-mid">16.33</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">8</span></td><td>بوفي أمينة</td><td>2BACLF-1</td><td><span class="score-pill score-mid">16.32</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">9</span></td><td>حمادي حفيظة</td><td>2BACLF-4</td><td><span class="score-pill score-mid">16.30</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">10</span></td><td>احنشي عمر</td><td>2BACLF-2</td><td><span class="score-pill score-mid">16.20</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ====== 1BACSEF ====== -->
+  <div id="bacsef" class="section">
+    <div class="stats-grid">
+      <div class="stat-card" style="--color:#00d4ff"><div class="stat-label">إجمالي التلاميذ</div><div class="stat-value">277</div><div class="stat-sub">8 أقسام</div></div>
+      <div class="stat-card" style="--color:#00e676"><div class="stat-label">ناجحون</div><div class="stat-value">186</div><div class="stat-sub">67%</div></div>
+      <div class="stat-card" style="--color:#ff6b6b"><div class="stat-label">راسبون</div><div class="stat-value">91</div><div class="stat-sub">33%</div></div>
+      <div class="stat-card" style="--color:#ffd700"><div class="stat-label">أعلى معدل</div><div class="stat-value">18.73</div><div class="stat-sub">كريم مروة</div></div>
+    </div>
+
+    <div class="chart-card" style="margin-bottom:20px">
+      <div class="chart-title"><span class="dot"></span>توزيع الدرجات</div>
+      <div class="dist-bar">
+        <div class="dist-seg" style="flex:33;background:#ff4757">33%</div>
+        <div class="dist-seg" style="flex:30;background:#ff6b35">30%</div>
+        <div class="dist-seg" style="flex:13;background:#ffa502">13%</div>
+        <div class="dist-seg" style="flex:17;background:#7bed9f">17%</div>
+        <div class="dist-seg" style="flex:4;background:#2ed573">4%</div>
+        <div class="dist-seg" style="flex:3;background:#00d4ff">3%</div>
+      </div>
+      <div class="dist-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#ff4757"></div>أقل من 10 (33%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#ff6b35"></div>10-12 (30%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#ffa502"></div>12-14 (13%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#7bed9f"></div>14-16 (17%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#2ed573"></div>16-18 (4%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#00d4ff"></div>أكثر من 18 (3%)</div>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-title"><span class="dot"></span>معدل القسم</div>
+        <div class="chart-wrap"><canvas id="bacsefClassChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title"><span class="dot" style="background:var(--accent3)"></span>نسبة الراسبين</div>
+        <div class="chart-wrap"><canvas id="bacsefFailChart"></canvas></div>
+      </div>
+      <div class="chart-card wide">
+        <div class="chart-title"><span class="dot" style="background:var(--accent5)"></span>متوسط المعدلات حسب المادة</div>
+        <div class="chart-wrap tall"><canvas id="bacsefSubjChart"></canvas></div>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-title"><span class="dot" style="background:var(--gold)"></span>التلاميذ العشر الأوائل</div>
+      <table class="top-table">
+        <thead><tr><th>#</th><th>الاسم والنسب</th><th>القسم</th><th>المعدل</th></tr></thead>
+        <tbody>
+          <tr><td><span class="rank-badge rank-1">1</span></td><td>كريم مروة</td><td>1BACSEF-6</td><td><span class="score-pill score-high">18.73</span></td></tr>
+          <tr><td><span class="rank-badge rank-2">2</span></td><td>عاطفي خديجة</td><td>1BACSEF-1</td><td><span class="score-pill score-high">18.72</span></td></tr>
+          <tr><td><span class="rank-badge rank-3">3</span></td><td>الباشا ريحانة</td><td>1BACSEF-4</td><td><span class="score-pill score-mid">18.36</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">4</span></td><td>الزيو خديجة</td><td>1BACSEF-3</td><td><span class="score-pill score-mid">18.33</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">5</span></td><td>ايت الحيان هبة</td><td>1BACSEF-3</td><td><span class="score-pill score-mid">18.28</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">6</span></td><td>العرالي رميساء</td><td>1BACSEF-8</td><td><span class="score-pill score-mid">18.27</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">7</span></td><td>اخواييري بسملة</td><td>1BACSEF-1</td><td><span class="score-pill score-mid">18.07</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">8</span></td><td>جديلي هاجر</td><td>1BACSEF-1</td><td><span class="score-pill score-mid">18.02</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">9</span></td><td>ايت ناصر ايشو وئام</td><td>1BACSEF-1</td><td><span class="score-pill score-mid">17.73</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">10</span></td><td>ابوزيد أميرة</td><td>1BACSEF-1</td><td><span class="score-pill score-mid">17.13</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ====== 1BACSHF ====== -->
+  <div id="bacshf" class="section">
+    <div class="stats-grid">
+      <div class="stat-card" style="--color:#00d4ff"><div class="stat-label">إجمالي التلاميذ</div><div class="stat-value">195</div><div class="stat-sub">5 أقسام</div></div>
+      <div class="stat-card" style="--color:#00e676"><div class="stat-label">ناجحون</div><div class="stat-value">184</div><div class="stat-sub">94%</div></div>
+      <div class="stat-card" style="--color:#ff6b6b"><div class="stat-label">راسبون</div><div class="stat-value">11</div><div class="stat-sub">6%</div></div>
+      <div class="stat-card" style="--color:#ffd700"><div class="stat-label">أعلى معدل</div><div class="stat-value">18.66</div><div class="stat-sub">كرضو انس</div></div>
+    </div>
+
+    <div class="chart-card" style="margin-bottom:20px">
+      <div class="chart-title"><span class="dot"></span>توزيع الدرجات</div>
+      <div class="dist-bar">
+        <div class="dist-seg" style="flex:6;background:#ff4757">6%</div>
+        <div class="dist-seg" style="flex:35;background:#ff6b35">35%</div>
+        <div class="dist-seg" style="flex:41;background:#ffa502">41%</div>
+        <div class="dist-seg" style="flex:15;background:#7bed9f">15%</div>
+        <div class="dist-seg" style="flex:3;background:#2ed573">3%</div>
+        <div class="dist-seg" style="flex:1;background:#00d4ff">1%</div>
+      </div>
+      <div class="dist-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#ff4757"></div>أقل من 10 (6%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#ff6b35"></div>10-12 (35%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#ffa502"></div>12-14 (41%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#7bed9f"></div>14-16 (15%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#2ed573"></div>16-18 (3%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#00d4ff"></div>أكثر من 18 (1%)</div>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-title"><span class="dot"></span>معدل القسم</div>
+        <div class="chart-wrap"><canvas id="bacshfClassChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title"><span class="dot" style="background:var(--accent3)"></span>نسبة الراسبين</div>
+        <div class="chart-wrap"><canvas id="bacshfFailChart"></canvas></div>
+      </div>
+      <div class="chart-card wide">
+        <div class="chart-title"><span class="dot" style="background:var(--accent5)"></span>متوسط المعدلات حسب المادة</div>
+        <div class="chart-wrap tall"><canvas id="bacshfSubjChart"></canvas></div>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-title"><span class="dot" style="background:var(--gold)"></span>التلاميذ العشر الأوائل</div>
+      <table class="top-table">
+        <thead><tr><th>#</th><th>الاسم والنسب</th><th>القسم</th><th>المعدل</th></tr></thead>
+        <tbody>
+          <tr><td><span class="rank-badge rank-1">1</span></td><td>كرضو انس</td><td>1BACSHF-2</td><td><span class="score-pill score-high">18.66</span></td></tr>
+          <tr><td><span class="rank-badge rank-2">2</span></td><td>أبو القاسم اسماعيل</td><td>1BACSHF-1</td><td><span class="score-pill score-mid">17.92</span></td></tr>
+          <tr><td><span class="rank-badge rank-3">3</span></td><td>علول أحلام</td><td>1BACSHF-3</td><td><span class="score-pill score-mid">16.48</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">4</span></td><td>قندري إلهام</td><td>1BACSHF-3</td><td><span class="score-pill score-mid">16.32</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">5</span></td><td>الرشيد شيماء</td><td>1BACSHF-4</td><td><span class="score-pill score-mid">16.24</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">6</span></td><td>كراوي نسيمة</td><td>1BACSHF-3</td><td><span class="score-pill score-mid">16.19</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">7</span></td><td>بلفليفلي صفاء</td><td>1BACSHF-4</td><td><span class="score-pill score-mid">16.13</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">8</span></td><td>ضيكوك سلمى</td><td>1BACSHF-4</td><td><span class="score-pill score-mid">15.93</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">9</span></td><td>لعزاوي فاطمة</td><td>1BACSHF-1</td><td><span class="score-pill score-mid">15.86</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">10</span></td><td>أمنهو خديجة</td><td>1BACSHF-4</td><td><span class="score-pill score-mid">15.69</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ====== TCSF ====== -->
+  <div id="tcsf" class="section">
+    <div class="stats-grid">
+      <div class="stat-card" style="--color:#00d4ff"><div class="stat-label">إجمالي التلاميذ</div><div class="stat-value">262</div><div class="stat-sub">8 أقسام</div></div>
+      <div class="stat-card" style="--color:#00e676"><div class="stat-label">ناجحون</div><div class="stat-value">229</div><div class="stat-sub">87%</div></div>
+      <div class="stat-card" style="--color:#ff6b6b"><div class="stat-label">راسبون</div><div class="stat-value">33</div><div class="stat-sub">13%</div></div>
+      <div class="stat-card" style="--color:#ffd700"><div class="stat-label">أعلى معدل</div><div class="stat-value">19.24</div><div class="stat-sub">الخروى يوسف</div></div>
+    </div>
+
+    <div class="chart-card" style="margin-bottom:20px">
+      <div class="chart-title"><span class="dot"></span>توزيع الدرجات</div>
+      <div class="dist-bar">
+        <div class="dist-seg" style="flex:13;background:#ff4757">13%</div>
+        <div class="dist-seg" style="flex:35;background:#ff6b35">35%</div>
+        <div class="dist-seg" style="flex:24;background:#ffa502">24%</div>
+        <div class="dist-seg" style="flex:13;background:#7bed9f">13%</div>
+        <div class="dist-seg" style="flex:12;background:#2ed573">12%</div>
+        <div class="dist-seg" style="flex:3;background:#00d4ff">3%</div>
+      </div>
+      <div class="dist-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#ff4757"></div>أقل من 10 (13%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#ff6b35"></div>10-12 (35%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#ffa502"></div>12-14 (24%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#7bed9f"></div>14-16 (13%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#2ed573"></div>16-18 (12%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#00d4ff"></div>أكثر من 18 (3%)</div>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-title"><span class="dot"></span>معدل القسم</div>
+        <div class="chart-wrap"><canvas id="tcsfClassChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title"><span class="dot" style="background:var(--accent3)"></span>نسبة الراسبين</div>
+        <div class="chart-wrap"><canvas id="tcsfFailChart"></canvas></div>
+      </div>
+      <div class="chart-card wide">
+        <div class="chart-title"><span class="dot" style="background:var(--accent5)"></span>متوسط المعدلات حسب المادة</div>
+        <div class="chart-wrap tall"><canvas id="tcsfSubjChart"></canvas></div>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-title"><span class="dot" style="background:var(--gold)"></span>التلاميذ العشر الأوائل</div>
+      <table class="top-table">
+        <thead><tr><th>#</th><th>الاسم والنسب</th><th>القسم</th><th>المعدل</th></tr></thead>
+        <tbody>
+          <tr><td><span class="rank-badge rank-1">1</span></td><td>الخروى يوسف</td><td>TCSF-1</td><td><span class="score-pill score-high">19.24</span></td></tr>
+          <tr><td><span class="rank-badge rank-2">2</span></td><td>القاضي يوسف</td><td>TCSF-6</td><td><span class="score-pill score-high">19.01</span></td></tr>
+          <tr><td><span class="rank-badge rank-3">3</span></td><td>دروش سكينة</td><td>TCSF-2</td><td><span class="score-pill score-high">18.90</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">4</span></td><td>تيك تبيك مروى</td><td>TCSF-4</td><td><span class="score-pill score-mid">18.64</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">5</span></td><td>الذهبي هبة</td><td>TCSF-5</td><td><span class="score-pill score-mid">18.43</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">6</span></td><td>بن الدويراني اكرام</td><td>TCSF-3</td><td><span class="score-pill score-mid">18.39</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">7</span></td><td>هريمزة نهيلة</td><td>TCSF-3</td><td><span class="score-pill score-mid">18.38</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">8</span></td><td>ادكان سماح</td><td>TCSF-2</td><td><span class="score-pill score-mid">18.24</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">9</span></td><td>جبري وصال</td><td>TCSF-8</td><td><span class="score-pill score-mid">18.10</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">10</span></td><td>الخضير فاطمة</td><td>TCSF-7</td><td><span class="score-pill score-mid">17.94</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ====== TCLSHF ====== -->
+  <div id="tclshf" class="section">
+    <div class="stats-grid">
+      <div class="stat-card" style="--color:#00d4ff"><div class="stat-label">إجمالي التلاميذ</div><div class="stat-value">72</div><div class="stat-sub">2 قسمان</div></div>
+      <div class="stat-card" style="--color:#00e676"><div class="stat-label">ناجحون</div><div class="stat-value">55</div><div class="stat-sub">76%</div></div>
+      <div class="stat-card" style="--color:#ff6b6b"><div class="stat-label">راسبون</div><div class="stat-value">17</div><div class="stat-sub">24%</div></div>
+      <div class="stat-card" style="--color:#ffd700"><div class="stat-label">أعلى معدل</div><div class="stat-value">17.45</div><div class="stat-sub">ربيع حمزة</div></div>
+    </div>
+
+    <div class="chart-card" style="margin-bottom:20px">
+      <div class="chart-title"><span class="dot"></span>توزيع الدرجات</div>
+      <div class="dist-bar">
+        <div class="dist-seg" style="flex:24;background:#ff4757">24%</div>
+        <div class="dist-seg" style="flex:42;background:#ff6b35">42%</div>
+        <div class="dist-seg" style="flex:25;background:#ffa502">25%</div>
+        <div class="dist-seg" style="flex:6;background:#7bed9f">6%</div>
+        <div class="dist-seg" style="flex:4;background:#2ed573">4%</div>
+        <div class="dist-seg" style="flex:0.5;background:#00d4ff"></div>
+      </div>
+      <div class="dist-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#ff4757"></div>أقل من 10 (24%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#ff6b35"></div>10-12 (42%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#ffa502"></div>12-14 (25%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#7bed9f"></div>14-16 (6%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#2ed573"></div>16-18 (4%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#00d4ff"></div>أكثر من 18 (0%)</div>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-title"><span class="dot"></span>معدل القسم</div>
+        <div class="chart-wrap"><canvas id="tclshfClassChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title"><span class="dot" style="background:var(--accent5)"></span>متوسط المعدلات حسب المادة</div>
+        <div class="chart-wrap"><canvas id="tclshfSubjChart"></canvas></div>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-title"><span class="dot" style="background:var(--gold)"></span>أوائل المستوى</div>
+      <table class="top-table">
+        <thead><tr><th>#</th><th>الاسم والنسب</th><th>القسم</th><th>المعدل</th></tr></thead>
+        <tbody>
+          <tr><td><span class="rank-badge rank-1">1</span></td><td>ربيع حمزة</td><td>TCLSHF-1</td><td><span class="score-pill score-mid">17.45</span></td></tr>
+          <tr><td><span class="rank-badge rank-2">2</span></td><td>اشباك حفصة</td><td>TCLSHF-2</td><td><span class="score-pill score-mid">16.76</span></td></tr>
+          <tr><td><span class="rank-badge rank-3">3</span></td><td>الشادلي اية</td><td>TCLSHF-2</td><td><span class="score-pill score-mid">16.68</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">4</span></td><td>كروم صفاء</td><td>TCLSHF-1</td><td><span class="score-pill score-mid">15.72</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">5</span></td><td>بنحجو خديجة</td><td>TCLSHF-2</td><td><span class="score-pill score-mid">14.42</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">6</span></td><td>ادالطالب هاجر</td><td>TCLSHF-1</td><td><span class="score-pill score-mid">14.26</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">7</span></td><td>المحجوبي هجر</td><td>TCLSHF-1</td><td><span class="score-pill score-mid">14.06</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">8</span></td><td>استيف اسماء</td><td>TCLSHF-1</td><td><span class="score-pill score-mid">13.94</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">9</span></td><td>عرايفة كنزة</td><td>TCLSHF-2</td><td><span class="score-pill score-mid">13.91</span></td></tr>
+          <tr><td><span class="rank-badge rank-other">10</span></td><td>وحدو فاطمة</td><td>TCLSHF-2</td><td><span class="score-pill score-mid">13.88</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <footer>
+    ثانوية عمرو بن العاص التأهيلية 
+  </footer>
+</div>
+
+<script>
+Chart.defaults.color = '#8892b0';
+Chart.defaults.font.family = "'Cairo', sans-serif";
+Chart.defaults.font.size = 11;
+
+const gridColor = 'rgba(30,45,80,0.5)';
+const colors = {
+  blue: '#00d4ff', purple: '#7b61ff', green: '#00e676',
+  red: '#ff6b6b', orange: '#ffb300', gold: '#ffd700',
+  teal: '#26c6da', pink: '#f06292'
+};
+
+function barOpts(labels, data, color, indexAxis='x') {
+  return {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        data,
+        backgroundColor: Array.isArray(color) ? color : data.map((_,i) => color + (i%2===0 ? 'cc' : '99')),
+        borderColor: Array.isArray(color) ? color : color,
+        borderWidth: 1,
+        borderRadius: 6,
+        borderSkipped: false
+      }]
+    },
+    options: {
+      indexAxis,
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: gridColor }, ticks: { color: '#8892b0' } },
+        y: { grid: { color: gridColor }, ticks: { color: '#8892b0' } }
+      }
+    }
+  };
+}
+
+function radarOpts(labels, data) {
+  return {
+    type: 'radar',
+    data: {
+      labels,
+      datasets: [{
+        data,
+        backgroundColor: 'rgba(0,212,255,0.1)',
+        borderColor: '#00d4ff',
+        borderWidth: 2,
+        pointBackgroundColor: '#00d4ff',
+        pointRadius: 3
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { r: { grid: { color: gridColor }, ticks: { backdropColor: 'transparent', color: '#8892b0' }, pointLabels: { color: '#8892b0', font: { size: 10 } } } }
+    }
+  };
+}
+
+// ---- OVERVIEW CHARTS ----
+new Chart(document.getElementById('overviewPassChart'), {
+  type: 'bar',
+  data: {
+    labels: ['2BACSPF','2BACSVTF','2BACLF','1BACSEF','1BACSHF','TCSF','TCLSHF'],
+    datasets: [
+      { label: 'ناجحون', data: [221,86,126,186,184,229,55], backgroundColor: '#00e67699', borderColor: '#00e676', borderWidth: 1, borderRadius: 4 },
+      { label: 'راسبون', data: [20,8,7,91,11,33,17], backgroundColor: '#ff6b6b99', borderColor: '#ff6b6b', borderWidth: 1, borderRadius: 4 }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: '#8892b0', usePointStyle: true } } },
+    scales: {
+      x: { stacked: true, grid: { color: gridColor }, ticks: { color: '#8892b0' } },
+      y: { stacked: true, grid: { color: gridColor }, ticks: { color: '#8892b0' } }
+    }
+  }
+});
+
+new Chart(document.getElementById('overviewDistChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['2BACSPF','2BACSVTF','2BACLF','1BACSEF','1BACSHF','TCSF','TCLSHF'],
+    datasets: [{ data: [241,94,133,277,195,262,72], backgroundColor: ['#00d4ff','#7b61ff','#00e676','#ff6b6b','#ffb300','#f06292','#26c6da'], borderWidth: 0 }]
+  },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#8892b0', usePointStyle: true, font: { size: 10 } } } }, cutout: '65%' }
+});
+
+new Chart(document.getElementById('overviewAvgChart'), {
+  type: 'bar',
+  data: {
+    labels: ['2BACSPF','2BACSVTF','2BACLF','1BACSEF','1BACSHF','TCSF','TCLSHF'],
+    datasets: [{ data: [13.65, 13.03, 13.37, 11.37, 12.43, 12.64, 11.43], backgroundColor: ['#00d4ff','#7b61ff','#00e676','#ff6b6b','#ffb300','#f06292','#26c6da'], borderWidth: 0, borderRadius: 6 }]
+  },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { color: gridColor }, ticks: { color: '#8892b0' } }, y: { grid: { color: gridColor }, ticks: { color: '#8892b0' }, min: 8, max: 16 } } }
+});
+
+// ---- 2BACSPF ----
+new Chart(document.getElementById('bacspfClassChart'), barOpts(
+  ['SPF-1','SPF-2','SPF-3','SPF-4','SPF-5','SPF-6','SPF-7'],
+  [13.47,13.53,12.66,14.31,13.36,12.56,13.92], colors.blue
+));
+new Chart(document.getElementById('bacspfFailChart'), barOpts(
+  ['SPF-1','SPF-2','SPF-3','SPF-4','SPF-5','SPF-6','SPF-7'],
+  [6,6,6,9,11,0,20], colors.red, 'y'
+));
+new Chart(document.getElementById('bacspfSubjChart'), barOpts(
+  ['ت.البدنية','العربية','الفرنسية','الرياضيات','ع.الحياة','الفيزياء','الإسلامية','الفلسفة','المواظبة','أج.2'],
+  [16.79,13.87,14.71,10.01,13.13,12.32,15.74,13.88,16.81,15.43],
+  ['#ffd700','#00d4ff','#7b61ff','#ff6b6b','#00e676','#26c6da','#ffb300','#f06292','#00e676','#00d4ff']
+));
+
+// ---- 2BACSVTF ----
+new Chart(document.getElementById('bacsvtfClassChart'), barOpts(
+  ['SVTF-1','SVTF-2','SVTF-3'],
+  [12.70,13.95,12.45], colors.teal
+));
+new Chart(document.getElementById('bacsvtfFailChart'), barOpts(
+  ['SVTF-1','SVTF-2','SVTF-3'],
+  [11,3,12], colors.orange, 'y'
+));
+new Chart(document.getElementById('bacsvtfSubjChart'), barOpts(
+  ['ت.البدنية','العربية','الفرنسية','الرياضيات','ع.الحياة','الفيزياء','الإسلامية','الفلسفة','المواظبة','أج.2'],
+  [17.56,15.45,14.86,11.07,11.63,9.59,16.91,12.93,14.72,14.26],
+  ['#ffd700','#00d4ff','#7b61ff','#ff6b6b','#00e676','#26c6da','#ffb300','#f06292','#00e676','#00d4ff']
+));
+
+// ---- 2BACLF ----
+new Chart(document.getElementById('baclfClassChart'), barOpts(
+  ['CLF-1','CLF-2','CLF-3','CLF-4'],
+  [13.06,12.72,14.27,13.44], colors.green
+));
+new Chart(document.getElementById('baclfFailChart'), barOpts(
+  ['CLF-1','CLF-2','CLF-3','CLF-4'],
+  [3,6,3,9], colors.pink, 'y'
+));
+new Chart(document.getElementById('baclfSubjChart'), barOpts(
+  ['ت.البدنية','العربية','الفرنسية','الرياضيات','الإسلامية','الفلسفة','المواظبة','الاجتماعيات','أج.2'],
+  [17.33,11.51,13.69,12.05,13.57,12.27,15.20,13.69,11.43],
+  ['#ffd700','#00d4ff','#7b61ff','#ff6b6b','#ffb300','#f06292','#00e676','#26c6da','#00d4ff']
+));
+
+// ---- 1BACSEF ----
+new Chart(document.getElementById('bacsefClassChart'), barOpts(
+  ['SEF-1','SEF-2','SEF-3','SEF-4','SEF-5','SEF-6','SEF-7','SEF-8'],
+  [11.50,12.32,11.64,10.56,10.83,11.97,11.70,11.46], colors.purple
+));
+new Chart(document.getElementById('bacsefFailChart'), barOpts(
+  ['SEF-1','SEF-2','SEF-3','SEF-4','SEF-5','SEF-6','SEF-7','SEF-8'],
+  [31,38,19,22,28,38,44,41], colors.red, 'y'
+));
+new Chart(document.getElementById('bacsefSubjChart'), barOpts(
+  ['ت.البدنية','العربية','الفرنسية','الرياضيات','ع.الحياة','الفيزياء','الإسلامية','الفلسفة','المواظبة','الاجتماعيات','أج.2'],
+  [15.60,13.23,12.48,9.25,10.79,10.15,14.96,12.85,16.43,11.47,13.48],
+  ['#ffd700','#00d4ff','#7b61ff','#ff6b6b','#00e676','#26c6da','#ffb300','#f06292','#00e676','#26c6da','#00d4ff']
+));
+
+// ---- 1BACSHF ----
+new Chart(document.getElementById('bacshfClassChart'), barOpts(
+  ['SHF-1','SHF-2','SHF-3','SHF-4','SHF-5'],
+  [12.88,12.38,12.55,12.16,12.19], colors.orange
+));
+new Chart(document.getElementById('bacshfFailChart'), barOpts(
+  ['SHF-1','SHF-2','SHF-3','SHF-4','SHF-5'],
+  [16,2,0,8,3], colors.red, 'y'
+));
+new Chart(document.getElementById('bacshfSubjChart'), barOpts(
+  ['ت.البدنية','العربية','الفرنسية','الرياضيات','ع.الحياة','الإسلامية','الفلسفة','المواظبة','الاجتماعيات','أج.2'],
+  [15.57,12.60,11.93,8.64,11.78,18.18,11.26,15.93,12.52,10.47],
+  ['#ffd700','#00d4ff','#7b61ff','#ff6b6b','#00e676','#ffb300','#f06292','#00e676','#26c6da','#00d4ff']
+));
+
+// ---- TCSF ----
+new Chart(document.getElementById('tcsfClassChart'), barOpts(
+  ['CSF-1','CSF-2','CSF-3','CSF-4','CSF-5','CSF-6','CSF-7','CSF-8'],
+  [12.73,13.12,12.38,11.44,13.30,13.20,12.31,11.44], colors.pink
+));
+new Chart(document.getElementById('tcsfFailChart'), barOpts(
+  ['CSF-1','CSF-2','CSF-3','CSF-4','CSF-5','CSF-6','CSF-7','CSF-8'],
+  [21,9,15,36,6,0,12,36], colors.red, 'y'
+));
+new Chart(document.getElementById('tcsfSubjChart'), barOpts(
+  ['المعلوميات','ت.البدنية','العربية','الفرنسية','الرياضيات','ع.الحياة','الفيزياء','الإسلامية','الفلسفة','المواظبة','الاجتماعيات','أج.2'],
+  [14.30,14.51,12.18,11.16,12.08,9.93,13.30,12.56,17.35,11.38,14.39,null],
+  ['#26c6da','#ffd700','#00d4ff','#7b61ff','#ff6b6b','#00e676','#26c6da','#ffb300','#f06292','#00e676','#26c6da','#00d4ff']
+));
+
+// ---- TCLSHF ----
+new Chart(document.getElementById('tclshfClassChart'), barOpts(
+  ['CLSHF-1','CLSHF-2'],
+  [11.95,10.90], colors.blue
+));
+new Chart(document.getElementById('tclshfSubjChart'), barOpts(
+  ['المعلوميات','ت.البدنية','العربية','الفرنسية','الرياضيات','ع.الحياة','الإسلامية','الفلسفة','المواظبة','الاجتماعيات','أج.2'],
+  [16.25,13.57,12.97,10.18,10.43,11.93,12.15,11.93,15.89,7.91,9.12],
+  ['#26c6da','#ffd700','#00d4ff','#7b61ff','#ff6b6b','#00e676','#ffb300','#f06292','#00e676','#26c6da','#00d4ff']
+));
+
+// Tab function
+function showTab(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const tabs = ['overview','bacspf','bacsvtf','baclf','bacsef','bacshf','tcsf','tclshf'];
+  document.querySelectorAll('.tab')[tabs.indexOf(id)].classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
