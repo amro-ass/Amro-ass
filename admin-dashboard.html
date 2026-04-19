@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>لوحة التحكم — الثانوية التأهيلية عمرو بن العاص</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Kufi+Arabic:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --r:#B5202C;--r2:#8B1520;--g:#C9A84C;--g2:#E8C97A;
+  --k:#0E0B08;--k2:#1C1410;--k3:#2A2420;
+  --surface:#181210;--surface2:#211A16;--surface3:#2C2420;
+  --border:rgba(201,168,76,.15);--border2:rgba(201,168,76,.3);
+  --text:rgba(255,255,255,.85);--text2:rgba(255,255,255,.5);--text3:rgba(255,168,76,.0);
+  --green:#2ECC71;--blue:#3498DB;--orange:#E67E22;
+  --sidebar-w:260px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Noto Kufi Arabic',sans-serif;background:var(--k);color:var(--text);min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:#0a0806}::-webkit-scrollbar-thumb{background:var(--g);border-radius:3px}
+
+/* ===== SIDEBAR ===== */
+.sidebar{
+  position:fixed;top:0;right:0;width:var(--sidebar-w);height:100vh;
+  background:var(--surface);border-left:1px solid var(--border);
+  display:flex;flex-direction:column;z-index:100;overflow:hidden;
+  transition:transform .3s cubic-bezier(.4,0,.2,1);
+}
+.sidebar-header{
+  padding:24px 20px 20px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:12px;flex-shrink:0;
+}
+.sidebar-logo{
+  width:40px;height:40px;background:var(--r);border:2px solid var(--g);
+  border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;
+  box-shadow:0 4px 14px rgba(181,32,44,.4);flex-shrink:0;
+}
+.sidebar-title{font-family:'Amiri',serif;font-size:13px;color:var(--g);line-height:1.3;font-weight:700}
+.sidebar-sub{font-size:10px;color:var(--text2);letter-spacing:.5px;margin-top:2px}
+
+.nav-section{padding:18px 14px 8px;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(201,168,76,.4);font-weight:600}
+
+.nav-item{
+  display:flex;align-items:center;gap:12px;padding:11px 16px;margin:2px 8px;
+  border-radius:8px;cursor:pointer;transition:all .2s;text-decoration:none;color:var(--text2);
+  font-size:13px;font-weight:500;
+}
+.nav-item:hover{background:rgba(201,168,76,.07);color:var(--text)}
+.nav-item.active{background:linear-gradient(135deg,rgba(181,32,44,.2),rgba(201,168,76,.1));color:var(--g);border:1px solid var(--border)}
+.nav-item .nav-icon{font-size:16px;width:20px;text-align:center;flex-shrink:0}
+.nav-badge{margin-right:auto;background:var(--r);color:#fff;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:700}
+
+.sidebar-footer{
+  margin-top:auto;padding:16px;border-top:1px solid var(--border);
+  font-size:11px;color:var(--text2);text-align:center;
+}
+
+/* ===== MAIN CONTENT ===== */
+.main{
+  margin-right:var(--sidebar-w);
+  min-height:100vh;
+  display:flex;flex-direction:column;
+}
+
+/* ===== TOPBAR ===== */
+.topbar{
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:0 32px;height:64px;display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:50;backdrop-filter:blur(12px);flex-shrink:0;
+}
+.topbar-title{font-family:'Amiri',serif;font-size:20px;color:#fff}
+.topbar-title span{color:var(--g)}
+.topbar-actions{display:flex;align-items:center;gap:12px}
+.tb-btn{
+  padding:8px 18px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;
+  border:none;font-family:'Noto Kufi Arabic',sans-serif;display:flex;align-items:center;gap:7px;
+  transition:all .2s;text-decoration:none;
+}
+.tb-btn.primary{background:var(--g);color:var(--k)}
+.tb-btn.primary:hover{background:var(--g2);transform:translateY(-1px);box-shadow:0 6px 20px rgba(201,168,76,.3)}
+.tb-btn.outline{background:transparent;color:var(--text);border:1px solid var(--border2)}
+.tb-btn.outline:hover{background:rgba(201,168,76,.07);border-color:var(--g)}
+
+/* ===== PAGE CONTENT ===== */
+.page-content{padding:32px;flex:1;display:none}
+.page-content.active{display:block}
+
+/* ===== STATS CARDS ===== */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+.stat-card{
+  background:var(--surface2);border:1px solid var(--border);border-radius:12px;
+  padding:20px 22px;position:relative;overflow:hidden;transition:all .3s;
+}
+.stat-card:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.4)}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--card-color,var(--g))}
+.stat-icon{font-size:28px;margin-bottom:10px}
+.stat-val{font-family:'Amiri',serif;font-size:36px;color:var(--card-color,var(--g));line-height:1;font-weight:700}
+.stat-lbl{font-size:12px;color:var(--text2);margin-top:5px;letter-spacing:.5px}
+
+/* ===== SECTION HEADER ===== */
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.section-header h2{font-family:'Amiri',serif;font-size:22px;color:#fff}
+.section-header h2 span{color:var(--g);font-size:14px;margin-right:8px;font-family:'Noto Kufi Arabic',sans-serif}
+
+/* ===== ADD NEWS FORM ===== */
+.form-card{
+  background:var(--surface2);border:1px solid var(--border);border-radius:14px;
+  padding:28px;margin-bottom:28px;
+}
+.form-card-title{
+  font-family:'Amiri',serif;font-size:19px;color:var(--g);margin-bottom:22px;
+  display:flex;align-items:center;gap:10px;padding-bottom:16px;border-bottom:1px solid var(--border);
+}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.form-group{display:flex;flex-direction:column;gap:7px}
+.form-group.full{grid-column:1/-1}
+.form-label{font-size:12px;color:var(--text2);letter-spacing:.5px;font-weight:600}
+.form-input,.form-select,.form-textarea{
+  background:var(--surface3);border:1px solid rgba(201,168,76,.18);border-radius:8px;
+  padding:11px 14px;color:var(--text);font-family:'Noto Kufi Arabic',sans-serif;font-size:14px;
+  transition:border-color .2s,box-shadow .2s;outline:none;width:100%;
+}
+.form-input:focus,.form-select:focus,.form-textarea:focus{
+  border-color:var(--g);box-shadow:0 0 0 3px rgba(201,168,76,.1);
+}
+.form-textarea{resize:vertical;min-height:120px;line-height:1.7}
+.form-select{appearance:none;cursor:pointer}
+option{background:#1C1410}
+
+.form-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}
+.btn-save{background:var(--g);color:var(--k);padding:11px 28px;border-radius:8px;border:none;font-family:'Noto Kufi Arabic',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:8px}
+.btn-save:hover{background:var(--g2);transform:translateY(-2px);box-shadow:0 6px 20px rgba(201,168,76,.3)}
+.btn-cancel{background:transparent;color:var(--text2);padding:11px 20px;border-radius:8px;border:1px solid var(--border);font-family:'Noto Kufi Arabic',sans-serif;font-size:13px;cursor:pointer;transition:all .2s}
+.btn-cancel:hover{border-color:var(--border2);color:var(--text)}
+
+/* ===== NEWS LIST TABLE ===== */
+.news-table-wrap{
+  background:var(--surface2);border:1px solid var(--border);border-radius:14px;overflow:hidden;
+}
+.table-toolbar{
+  display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--border);
+}
+.search-box{
+  flex:1;background:var(--surface3);border:1px solid rgba(201,168,76,.15);border-radius:8px;
+  padding:9px 14px;color:var(--text);font-family:'Noto Kufi Arabic',sans-serif;font-size:13px;
+  outline:none;transition:border-color .2s;
+}
+.search-box:focus{border-color:var(--g)}
+.filter-chip{
+  padding:7px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;
+  color:var(--text2);font-size:12px;cursor:pointer;transition:all .2s;font-family:'Noto Kufi Arabic',sans-serif;
+}
+.filter-chip:hover,.filter-chip.active{background:rgba(201,168,76,.1);border-color:var(--g);color:var(--g)}
+
+table{width:100%;border-collapse:collapse}
+thead th{padding:12px 18px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text2);text-align:right;background:var(--surface3);border-bottom:1px solid var(--border);font-weight:600}
+tbody tr{border-bottom:1px solid rgba(201,168,76,.07);transition:background .2s}
+tbody tr:hover{background:rgba(201,168,76,.04)}
+tbody tr:last-child{border-bottom:none}
+tbody td{padding:14px 18px;font-size:13px;color:var(--text);vertical-align:middle}
+
+.news-thumb{width:52px;height:40px;border-radius:6px;object-fit:cover;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:22px;border:1px solid var(--border);overflow:hidden;flex-shrink:0}
+.news-thumb img{width:100%;height:100%;object-fit:cover}
+.news-title-cell{display:flex;align-items:center;gap:12px}
+.news-title-text{font-weight:600;color:#fff;font-size:13px;line-height:1.4}
+.news-title-sub{font-size:11px;color:var(--text2);margin-top:2px}
+
+.tag{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.5px}
+.tag-tameez{background:rgba(201,168,76,.12);color:var(--g);border:1px solid rgba(201,168,76,.25)}
+.tag-digital{background:rgba(52,152,219,.12);color:#3498DB;border:1px solid rgba(52,152,219,.25)}
+.tag-sport{background:rgba(46,204,113,.12);color:#2ECC71;border:1px solid rgba(46,204,113,.25)}
+.tag-tarbawi{background:rgba(181,32,44,.12);color:#e77;border:1px solid rgba(181,32,44,.25)}
+.tag-general{background:rgba(255,255,255,.07);color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.1)}
+
+.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-left:6px}
+.status-pub{background:var(--green);box-shadow:0 0 6px rgba(46,204,113,.5)}
+.status-draft{background:var(--orange)}
+
+.action-btns{display:flex;gap:7px;align-items:center}
+.act-btn{width:32px;height:32px;border-radius:7px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .2s}
+.act-edit{background:rgba(52,152,219,.12);color:#3498DB}
+.act-edit:hover{background:rgba(52,152,219,.25)}
+.act-del{background:rgba(181,32,44,.12);color:#e77}
+.act-del:hover{background:rgba(181,32,44,.25)}
+.act-view{background:rgba(201,168,76,.1);color:var(--g)}
+.act-view:hover{background:rgba(201,168,76,.22)}
+.act-toggle{background:rgba(46,204,113,.1);color:var(--green)}
+.act-toggle:hover{background:rgba(46,204,113,.22)}
+
+/* ===== PREVIEW PANEL ===== */
+.preview-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(8,4,2,.88);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:20px}
+.preview-overlay.open{display:flex}
+.preview-box{
+  background:var(--surface2);border:1px solid var(--border2);border-radius:16px;
+  max-width:620px;width:100%;max-height:90vh;overflow-y:auto;position:relative;
+  animation:popIn .3s cubic-bezier(.4,0,.2,1);
+}
+@keyframes popIn{from{opacity:0;transform:scale(.95) translateY(16px)}to{opacity:1;transform:none}}
+.preview-close{position:absolute;top:14px;left:14px;background:rgba(255,255,255,.08);border:none;color:var(--text2);width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:.2s}
+.preview-close:hover{color:#fff;background:var(--r)}
+.preview-img{width:100%;height:220px;object-fit:cover;border-radius:14px 14px 0 0}
+.preview-img-placeholder{width:100%;height:220px;background:linear-gradient(135deg,var(--surface3),var(--k3));display:flex;align-items:center;justify-content:center;font-size:60px;border-radius:14px 14px 0 0}
+.preview-body{padding:24px}
+.preview-meta{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.preview-title{font-family:'Amiri',serif;font-size:22px;color:#fff;line-height:1.4;margin-bottom:12px}
+.preview-divider{width:40px;height:2px;background:linear-gradient(90deg,var(--r),var(--g));border-radius:2px;margin:12px 0}
+.preview-text{font-size:14px;color:rgba(255,255,255,.65);line-height:1.9}
+.preview-excerpt{font-size:13px;color:rgba(255,255,255,.5);line-height:1.85}
+
+/* ===== TOAST ===== */
+.toast-container{position:fixed;bottom:24px;left:24px;z-index:999;display:flex;flex-direction:column;gap:10px}
+.toast{
+  background:var(--surface2);border:1px solid var(--border2);border-radius:10px;
+  padding:14px 18px;font-size:13px;color:var(--text);display:flex;align-items:center;gap:10px;
+  box-shadow:0 8px 28px rgba(0,0,0,.5);animation:slideIn .3s ease;min-width:260px;
+}
+@keyframes slideIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+.toast.success{border-color:rgba(46,204,113,.35)}
+.toast.error{border-color:rgba(181,32,44,.35)}
+.toast-icon{font-size:18px;flex-shrink:0}
+
+/* ===== EMPTY STATE ===== */
+.empty-state{text-align:center;padding:60px 20px;color:var(--text2)}
+.empty-state-icon{font-size:52px;margin-bottom:14px;opacity:.4}
+.empty-state h3{font-family:'Amiri',serif;font-size:20px;color:rgba(255,255,255,.3);margin-bottom:8px}
+.empty-state p{font-size:13px}
+
+/* ===== CONFIRM DIALOG ===== */
+.confirm-overlay{display:none;position:fixed;inset:0;z-index:300;background:rgba(8,4,2,.85);backdrop-filter:blur(6px);align-items:center;justify-content:center}
+.confirm-overlay.open{display:flex}
+.confirm-box{background:var(--surface2);border:1px solid rgba(181,32,44,.3);border-radius:14px;padding:32px;max-width:380px;width:90%;text-align:center;animation:popIn .25s ease}
+.confirm-icon{font-size:44px;margin-bottom:14px}
+.confirm-title{font-family:'Amiri',serif;font-size:20px;color:#fff;margin-bottom:8px}
+.confirm-sub{font-size:13px;color:var(--text2);margin-bottom:24px;line-height:1.6}
+.confirm-actions{display:flex;gap:10px;justify-content:center}
+.btn-danger{background:var(--r);color:#fff;padding:10px 24px;border-radius:8px;border:none;cursor:pointer;font-family:'Noto Kufi Arabic',sans-serif;font-size:13px;font-weight:700;transition:all .2s}
+.btn-danger:hover{background:var(--r2)}
+
+/* ===== DASHBOARD HOME ===== */
+.activity-feed{background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:20px}
+.activity-title{font-family:'Amiri',serif;font-size:17px;color:#fff;margin-bottom:18px;display:flex;align-items:center;gap:8px}
+.activity-item{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid rgba(201,168,76,.07)}
+.activity-item:last-child{border-bottom:none}
+.activity-dot{width:8px;height:8px;border-radius:50%;background:var(--g);margin-top:6px;flex-shrink:0;box-shadow:0 0 6px rgba(201,168,76,.4)}
+.activity-text{font-size:13px;color:var(--text);line-height:1.5}
+.activity-time{font-size:11px;color:var(--text2);margin-top:3px}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:900px){
+  .sidebar{transform:translateX(100%)}
+  .sidebar.mob-open{transform:translateX(0)}
+  .main{margin-right:0}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .form-grid{grid-template-columns:1fr}
+  .form-group.full{grid-column:1}
+  .topbar{padding:0 16px}
+  .page-content{padding:16px}
+}
+@media(max-width:600px){
+  .stats-row{grid-template-columns:1fr}
+  table{display:block;overflow-x:auto}
+}
+
+/* ===== CHAR COUNTER ===== */
+.char-counter{font-size:11px;color:var(--text2);text-align:left;margin-top:4px}
+.char-counter.warn{color:var(--orange)}
+.char-counter.over{color:var(--r)}
+
+/* ===== DRAG INDICATOR ===== */
+.drag-zone{
+  border:2px dashed rgba(201,168,76,.25);border-radius:10px;padding:20px;text-align:center;
+  color:var(--text2);font-size:13px;cursor:pointer;transition:all .2s;
+}
+.drag-zone:hover,.drag-zone.drag-over{border-color:var(--g);background:rgba(201,168,76,.05);color:var(--g)}
+.drag-zone input[type=file]{display:none}
+
+/* ===== HELP PANEL ===== */
+.help-tip{
+  background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.15);border-radius:10px;
+  padding:12px 16px;font-size:12px;color:rgba(255,255,255,.45);line-height:1.7;margin-top:8px;
+  display:flex;gap:10px;align-items:flex-start;
+}
+.help-tip .hi{flex-shrink:0;font-size:16px}
+
+/* ===== TABS ===== */
+.tabs{display:flex;gap:3px;background:var(--surface3);border-radius:10px;padding:4px;margin-bottom:24px}
+.tab{flex:1;padding:9px;border-radius:8px;border:none;background:transparent;color:var(--text2);font-family:'Noto Kufi Arabic',sans-serif;font-size:13px;cursor:pointer;transition:all .2s;font-weight:500}
+.tab.active{background:var(--surface2);color:var(--g);box-shadow:0 2px 8px rgba(0,0,0,.3);border:1px solid var(--border)}
+
+/* ===== MOBILE TOGGLE ===== */
+.mob-toggle{display:none;background:var(--surface2);border:1px solid var(--border);border-radius:8px;width:38px;height:38px;align-items:center;justify-content:center;cursor:pointer;font-size:18px}
+@media(max-width:900px){.mob-toggle{display:flex}}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">🏫</div>
+    <div>
+      <div class="sidebar-title">عمرو بن العاص</div>
+      <div class="sidebar-sub">لوحة التحكم الإدارية</div>
+    </div>
+  </div>
+
+  <div class="nav-section">القائمة الرئيسية</div>
+  <a class="nav-item active" onclick="showPage('dashboard',this)" href="#">
+    <span class="nav-icon">🏠</span> لوحة التحكم
+  </a>
+  <a class="nav-item" onclick="showPage('news-manage',this)" href="#">
+    <span class="nav-icon">📰</span> إدارة الأخبار
+    <span class="nav-badge" id="news-count-badge">4</span>
+  </a>
+  <a class="nav-item" onclick="showPage('add-news',this)" href="#">
+    <span class="nav-icon">➕</span> إضافة خبر جديد
+  </a>
+
+  <div class="nav-section">الإعدادات</div>
+  <a class="nav-item" onclick="showPage('settings',this)" href="#">
+    <span class="nav-icon">⚙️</span> إعدادات الموقع
+  </a>
+  <a class="nav-item" href="index.html" target="_blank">
+    <span class="nav-icon">🌐</span> عرض الموقع
+  </a>
+
+  <div class="sidebar-footer">
+    الثانوية التأهيلية عمرو بن العاص<br/>
+    <span style="color:rgba(201,168,76,.4)">لوحة التحكم v1.0</span>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:14px">
+      <button class="mob-toggle" onclick="toggleSidebar()">☰</button>
+      <div class="topbar-title" id="topbar-title">لوحة <span>التحكم</span></div>
+    </div>
+    <div class="topbar-actions">
+      <button class="tb-btn outline" onclick="showPage('news-manage',null);setActiveNav('news-manage')">
+        📰 الأخبار
+      </button>
+      <button class="tb-btn primary" onclick="showPage('add-news',null);setActiveNav('add-news')">
+        ✚ خبر جديد
+      </button>
+    </div>
+  </div>
+
+  <!-- PAGE: DASHBOARD -->
+  <div class="page-content active" id="page-dashboard">
+    <div class="stats-row">
+      <div class="stat-card" style="--card-color:#C9A84C">
+        <div class="stat-icon">📰</div>
+        <div class="stat-val" id="total-news-stat">4</div>
+        <div class="stat-lbl">إجمالي الأخبار</div>
+      </div>
+      <div class="stat-card" style="--card-color:#2ECC71">
+        <div class="stat-icon">✅</div>
+        <div class="stat-val" id="pub-news-stat">4</div>
+        <div class="stat-lbl">أخبار منشورة</div>
+      </div>
+      <div class="stat-card" style="--card-color:#E67E22">
+        <div class="stat-icon">📝</div>
+        <div class="stat-val" id="draft-news-stat">0</div>
+        <div class="stat-lbl">مسودات</div>
+      </div>
+      <div class="stat-card" style="--card-color:#3498DB">
+        <div class="stat-icon">🏷️</div>
+        <div class="stat-val">4</div>
+        <div class="stat-lbl">تصنيفات</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+      <div class="activity-feed">
+        <div class="activity-title">🕐 آخر النشاطات</div>
+        <div id="activity-list">
+          <div class="activity-item">
+            <div class="activity-dot"></div>
+            <div>
+              <div class="activity-text">تمت إضافة خبر "حفل التميز — تكريم المتفوقين"</div>
+              <div class="activity-time">مارس ٢٠٢٦</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-dot" style="background:#3498DB;box-shadow:0 0 6px rgba(52,152,219,.4)"></div>
+            <div>
+              <div class="activity-text">تمت إضافة خبر "نشاط الاستعمال الآمن للإنترنت"</div>
+              <div class="activity-time">١٣ مارس ٢٠٢٦</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-dot" style="background:#2ECC71;box-shadow:0 0 6px rgba(46,204,113,.4)"></div>
+            <div>
+              <div class="activity-text">تمت إضافة خبر "نادي الشطرنج — دورة تدريبية"</div>
+              <div class="activity-time">٧ مارس ٢٠٢٦</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-dot" style="background:#e77;box-shadow:0 0 6px rgba(230,100,100,.4)"></div>
+            <div>
+              <div class="activity-text">تمت إضافة خبر "أنشطة تحسيسية حول الظواهر اللاتربوية"</div>
+              <div class="activity-time">مارس ٢٠٢٦</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-card" style="margin-bottom:0">
+        <div class="form-card-title">🚀 إجراءات سريعة</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <button class="tb-btn primary" onclick="showPage('add-news',null);setActiveNav('add-news')" style="justify-content:center;padding:14px">
+            ✚ إضافة خبر جديد
+          </button>
+          <button class="tb-btn outline" onclick="showPage('news-manage',null);setActiveNav('news-manage')" style="justify-content:center;padding:14px">
+            📋 إدارة الأخبار الحالية
+          </button>
+          <a class="tb-btn outline" href="index.html" target="_blank" style="justify-content:center;padding:14px">
+            🌐 معاينة الموقع
+          </a>
+        </div>
+        <div class="help-tip" style="margin-top:16px">
+          <span class="hi">💡</span>
+          <span>أضف الأخبار من لوحة التحكم. انسخ الكود المُولَّد ثم الصقه في ملف index.html لتظهر على الموقع فعلياً.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE: ADD NEWS -->
+  <div class="page-content" id="page-add-news">
+    <div class="section-header">
+      <h2>➕ <span></span>إضافة خبر جديد</h2>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('form',this)">📝 بيانات الخبر</button>
+      <button class="tab" onclick="switchTab('preview-tab',this)">👁️ معاينة</button>
+      <button class="tab" onclick="switchTab('code-tab',this)">💻 كود HTML</button>
+    </div>
+
+    <!-- FORM TAB -->
+    <div id="tab-form">
+      <div class="form-card">
+        <div class="form-card-title">📰 بيانات الخبر الأساسية</div>
+        <div class="form-grid">
+          <div class="form-group full">
+            <label class="form-label">عنوان الخبر *</label>
+            <input class="form-input" id="f-title" type="text" placeholder="أدخل عنوان الخبر..." maxlength="100" oninput="updateCharCount(this,'cc-title',100);livePreview()"/>
+            <div class="char-counter" id="cc-title">0 / 100</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">التصنيف *</label>
+            <select class="form-select" id="f-cat" onchange="livePreview()">
+              <option value="">— اختر التصنيف —</option>
+              <option value="تميز">تميز</option>
+              <option value="وعي رقمي">وعي رقمي</option>
+              <option value="رياضة ذهنية">رياضة ذهنية</option>
+              <option value="تربوي">تربوي</option>
+              <option value="ثقافي">ثقافي</option>
+              <option value="رياضي">رياضي</option>
+              <option value="إداري">إداري</option>
+              <option value="أخرى">أخرى</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">التاريخ *</label>
+            <input class="form-input" id="f-date" type="text" placeholder="مثال: أبريل ٢٠٢٦" oninput="livePreview()"/>
+          </div>
+          <div class="form-group full">
+            <label class="form-label">مقتطف الخبر (يظهر في البطاقة)</label>
+            <textarea class="form-textarea" id="f-excerpt" placeholder="ملخص قصير للخبر يظهر في قائمة الأخبار..." maxlength="250" rows="3" oninput="updateCharCount(this,'cc-exc',250);livePreview()"></textarea>
+            <div class="char-counter" id="cc-exc">0 / 250</div>
+          </div>
+          <div class="form-group full">
+            <label class="form-label">محتوى الخبر الكامل (يظهر في النافذة)</label>
+            <textarea class="form-textarea" id="f-content" placeholder="اكتب تفاصيل الخبر هنا..." rows="6" oninput="livePreview()"></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">رابط الصورة (URL) أو مسارها</label>
+            <input class="form-input" id="f-img" type="text" placeholder="مثال: imgs/img5.jpg أو https://..." oninput="livePreview()"/>
+            <div class="help-tip" style="margin-top:8px">
+              <span class="hi">🖼️</span>
+              <span>ضع الصورة في مجلد <code style="color:var(--g)">imgs/</code> ثم اكتب اسمها. أو استخدم رابطاً كاملاً.</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">حالة النشر</label>
+            <select class="form-select" id="f-status">
+              <option value="published">✅ منشور</option>
+              <option value="draft">📝 مسودة</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn-cancel" onclick="resetForm()">🔄 إعادة تعيين</button>
+          <button class="btn-save" onclick="saveNews()">💾 حفظ الخبر وإضافته</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PREVIEW TAB -->
+    <div id="tab-preview-tab" style="display:none">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div>
+          <div class="form-card-title" style="font-family:'Amiri',serif;font-size:16px;color:var(--g);margin-bottom:16px">📋 بطاقة الخبر (كما تظهر في الموقع)</div>
+          <div id="card-preview" style="background:#FAF6EE;border-radius:10px;overflow:hidden;box-shadow:0 4px 18px rgba(0,0,0,.2)">
+            <div style="height:4px;background:linear-gradient(90deg,#B5202C,#C9A84C)"></div>
+            <div style="background:#E8DED0;height:160px;display:flex;align-items:center;justify-content:center;font-size:44px" id="prev-img-area">🖼️</div>
+            <div style="padding:20px">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+                <span id="prev-cat-badge" style="background:rgba(181,32,44,.1);color:#B5202C;border:1px solid rgba(181,32,44,.2);font-size:10px;padding:2px 10px;border-radius:20px;font-weight:700;letter-spacing:1px">تصنيف</span>
+                <span style="font-size:11px;color:#888" id="prev-date">التاريخ</span>
+              </div>
+              <h3 style="font-family:'Amiri',serif;font-size:18px;color:#1C1410;margin-bottom:8px;line-height:1.4" id="prev-title">عنوان الخبر</h3>
+              <p style="font-size:12px;color:#6B5E54;line-height:1.8" id="prev-excerpt">مقتطف الخبر يظهر هنا...</p>
+              <div style="margin-top:14px;padding:9px 16px;background:#C9A84C;color:#1C1410;border-radius:4px;font-size:13px;font-weight:700;display:inline-block">اقرأ المزيد ←</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="form-card-title" style="font-family:'Amiri',serif;font-size:16px;color:var(--g);margin-bottom:16px">🗞️ نافذة التفاصيل</div>
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;overflow:hidden;max-height:460px;overflow-y:auto">
+            <div style="height:160px;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:48px" id="prev-modal-img">🖼️</div>
+            <div style="padding:22px">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+                <span id="prev-modal-cat" style="background:rgba(181,32,44,.12);color:#e77;border:1px solid rgba(181,32,44,.25);font-size:10px;padding:2px 10px;border-radius:20px;font-weight:700">تصنيف</span>
+                <span style="font-size:11px;color:#888" id="prev-modal-date">التاريخ</span>
+              </div>
+              <h2 style="font-family:'Amiri',serif;font-size:20px;color:#fff;margin-bottom:10px;line-height:1.4" id="prev-modal-title">عنوان الخبر</h2>
+              <div style="width:38px;height:2px;background:linear-gradient(90deg,#B5202C,#C9A84C);margin-bottom:14px;border-radius:2px"></div>
+              <p style="font-size:13px;color:rgba(255,255,255,.6);line-height:1.9;white-space:pre-wrap" id="prev-modal-content">محتوى الخبر الكامل يظهر هنا...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CODE TAB -->
+    <div id="tab-code-tab" style="display:none">
+      <div class="form-card">
+        <div class="form-card-title">💻 كود HTML الجاهز للنسخ</div>
+        <div class="help-tip" style="margin-bottom:16px">
+          <span class="hi">📌</span>
+          <span>انسخ الكود أدناه والصقه في ملف <code style="color:var(--g)">index.html</code> — بطاقة الخبر داخل <code style="color:var(--g)">.news-grid</code> ونافذة التفاصيل قبل <code style="color:var(--g)">&lt;/body&gt;</code></span>
+        </div>
+        <div style="margin-bottom:14px">
+          <div style="font-size:12px;color:var(--text2);margin-bottom:8px;font-weight:600">📄 بطاقة الخبر (ضعها داخل .news-grid)</div>
+          <div style="position:relative">
+            <pre id="code-card" style="background:var(--k);border:1px solid var(--border);border-radius:8px;padding:16px;font-size:12px;color:#a0cfff;overflow-x:auto;line-height:1.6;white-space:pre-wrap;font-family:monospace;max-height:200px;overflow-y:auto">اضغط "حفظ الخبر" أولاً لتوليد الكود</pre>
+            <button onclick="copyCode('code-card')" style="position:absolute;top:10px;left:10px;background:var(--surface3);border:1px solid var(--border);color:var(--text2);padding:5px 12px;border-radius:6px;font-size:11px;cursor:pointer;font-family:'Noto Kufi Arabic',sans-serif">📋 نسخ</button>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:12px;color:var(--text2);margin-bottom:8px;font-weight:600">🪟 نافذة التفاصيل (ضعها قبل &lt;/body&gt;)</div>
+          <div style="position:relative">
+            <pre id="code-modal" style="background:var(--k);border:1px solid var(--border);border-radius:8px;padding:16px;font-size:12px;color:#a0cfff;overflow-x:auto;line-height:1.6;white-space:pre-wrap;font-family:monospace;max-height:200px;overflow-y:auto">اضغط "حفظ الخبر" أولاً لتوليد الكود</pre>
+            <button onclick="copyCode('code-modal')" style="position:absolute;top:10px;left:10px;background:var(--surface3);border:1px solid var(--border);color:var(--text2);padding:5px 12px;border-radius:6px;font-size:11px;cursor:pointer;font-family:'Noto Kufi Arabic',sans-serif">📋 نسخ</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE: MANAGE NEWS -->
+  <div class="page-content" id="page-news-manage">
+    <div class="section-header">
+      <h2>📋 <span></span>إدارة الأخبار</h2>
+      <button class="tb-btn primary" onclick="showPage('add-news',null);setActiveNav('add-news')">✚ خبر جديد</button>
+    </div>
+
+    <div class="news-table-wrap">
+      <div class="table-toolbar">
+        <input class="search-box" type="text" placeholder="🔍 البحث في الأخبار..." id="search-input" oninput="filterNews()"/>
+        <button class="filter-chip active" onclick="filterByStatus('all',this)">الكل</button>
+        <button class="filter-chip" onclick="filterByStatus('published',this)">منشور</button>
+        <button class="filter-chip" onclick="filterByStatus('draft',this)">مسودة</button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:60px">#</th>
+            <th>الخبر</th>
+            <th style="width:120px">التصنيف</th>
+            <th style="width:120px">التاريخ</th>
+            <th style="width:90px">الحالة</th>
+            <th style="width:140px">الإجراءات</th>
+          </tr>
+        </thead>
+        <tbody id="news-table-body">
+          <!-- Rows injected by JS -->
+        </tbody>
+      </table>
+      <div id="empty-state" class="empty-state" style="display:none">
+        <div class="empty-state-icon">📭</div>
+        <h3>لا توجد أخبار</h3>
+        <p>لم يتم العثور على أخبار تطابق البحث</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE: SETTINGS -->
+  <div class="page-content" id="page-settings">
+    <div class="section-header"><h2>⚙️ <span></span>إعدادات الموقع</h2></div>
+    <div class="form-card">
+      <div class="form-card-title">🏫 معلومات المؤسسة</div>
+      <div class="form-grid">
+        <div class="form-group full">
+          <label class="form-label">اسم المؤسسة</label>
+          <input class="form-input" value="الثانوية التأهيلية عمرو بن العاص"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">الهاتف</label>
+          <input class="form-input" value="0537 - XXX - XXX"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">البريد الإلكتروني</label>
+          <input class="form-input" value="lycee.amroubnolaas@gmail.com"/>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">العنوان</label>
+          <input class="form-input" value="Av. Aït Moulay, Anza 80000 — Agadir"/>
+        </div>
+      </div>
+      <div class="help-tip" style="margin-top:16px">
+        <span class="hi">ℹ️</span>
+        <span>تعديل هذه البيانات في لوحة التحكم لا يُحدّث الموقع تلقائياً — يجب تعديلها يدوياً في ملف index.html.</span>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end .main -->
+
+<!-- PREVIEW OVERLAY -->
+<div class="preview-overlay" id="preview-overlay">
+  <div class="preview-box">
+    <button class="preview-close" onclick="closePreview()">✕</button>
+    <div id="po-img-wrap">
+      <div class="preview-img-placeholder" id="po-img-ph">🖼️</div>
+    </div>
+    <div class="preview-body">
+      <div class="preview-meta">
+        <span id="po-tag" class="tag tag-general">تصنيف</span>
+        <span style="width:4px;height:4px;background:#555;border-radius:50%;display:inline-block;margin:0 4px"></span>
+        <span id="po-date" style="font-size:12px;color:var(--text2)">التاريخ</span>
+      </div>
+      <div class="preview-title" id="po-title">عنوان الخبر</div>
+      <div class="preview-divider"></div>
+      <div class="preview-text" id="po-content" style="white-space:pre-wrap"></div>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM DIALOG -->
+<div class="confirm-overlay" id="confirm-overlay">
+  <div class="confirm-box">
+    <div class="confirm-icon">🗑️</div>
+    <div class="confirm-title">تأكيد الحذف</div>
+    <div class="confirm-sub">هل أنت متأكد من حذف هذا الخبر؟<br/>لا يمكن التراجع عن هذا الإجراء.</div>
+    <div class="confirm-actions">
+      <button class="btn-cancel" onclick="closeConfirm()">إلغاء</button>
+      <button class="btn-danger" onclick="confirmDelete()">🗑️ حذف</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+// ===== DATA STORE =====
+let newsData = JSON.parse(localStorage.getItem('school-news') || 'null') || [
+  {
+    id: 1, title: 'حفل التميز — تكريم المتفوقين',
+    category: 'تميز', date: 'مارس ٢٠٢٦',
+    excerpt: 'صور من حفل التميز الذي نُظم على شرف التلميذات والتلاميذ المتفوقين، في أجواء احتفالية مميزة تجسد روح الاجتهاد والتفوق...',
+    content: 'صور من حفل التميز الذي نُظم على شرف التلميذات والتلاميذ المتفوقين، في أجواء احتفالية مميزة تجسد روح الاجتهاد والتفوق. وكل الشكر والتقدير موصول لكل الحاضرين والمساهمين الذين كان لهم دور كبير في إنجاح هذه النسخة المتميزة.',
+    image: 'imgs/img1.jpg', status: 'published', fn: 'openNews'
+  },
+  {
+    id: 2, title: 'تقرير حول نشاط تحسيسي حول الاستعمال الآمن للإنترنت',
+    category: 'وعي رقمي', date: '١٣ مارس ٢٠٢٦',
+    excerpt: 'في إطار الحملة الوطنية التاسعة للاستعمال الآمن للإنترنت، نظم نادي المبادرة والتمكين ورشة تكوينية لفائدة تلاميذ ثانوية عمرو ابن العاص...',
+    content: 'في إطار الانخراط في الحملة الوطنية التاسعة للاستعمال الآمن للإنترنت، نظم نادي المبادرة والتمكين بتنسيق مع نادي مهارات الحياة والدعم النفسي ورشة تكوينية لفائدة تلميذات وتلاميذ ثانوية عمرو ابن العاص.',
+    image: 'imgs/img2.jpg', status: 'published', fn: 'openNews2'
+  },
+  {
+    id: 3, title: 'نادي الشطرنج والمهارات الذهنية — دورة تدريبية متميزة',
+    category: 'رياضة ذهنية', date: '٧ مارس ٢٠٢٦',
+    excerpt: 'في أجواء حماسية وتفاعلية، نظم نادي الشطرنج والمهارات الذهنية بتنسيق مع النادي الرياضي لأزرو للشطرنج دورة تدريبية لفائدة تلاميذ المؤسسة...',
+    content: 'في أجواء حماسية وتفاعلية، نظم نادي الشطرنج والمهارات الذهنية بالمؤسسة، بتنسيق مع النادي الرياضي لأزرو للشطرنج، دورة تدريبية متميزة لفائدة تلميذات وتلاميذ المؤسسة.',
+    image: 'imgs/img3.jpg', status: 'published', fn: 'openNews3'
+  },
+  {
+    id: 4, title: 'أنشطة تحسيسية حول الظواهر اللاتربوية بالوسط المدرسي',
+    category: 'تربوي', date: 'مارس ٢٠٢٦',
+    excerpt: 'نظمت المؤسسة أنشطة تحسيسية لفائدة التلاميذ حول بعض الظواهر اللاتربوية، بتأطير من أطر الأمن الوطني، بهدف تعزيز السلوك المدني داخل الوسط المدرسي.',
+    content: 'في إطار الجهود الرامية إلى ترسيخ القيم التربوية وتعزيز السلوك المدني داخل المؤسسة، تم تنظيم مجموعة من الأنشطة التحسيسية لفائدة التلميذات والتلاميذ.',
+    image: 'imgs/img8.jpg', status: 'published', fn: 'openNews4'
+  }
+];
+
+let editingId = null;
+let deleteId = null;
+let currentFilter = 'all';
+let nextId = 5;
+
+function saveToStorage(){
+  localStorage.setItem('school-news', JSON.stringify(newsData));
+  updateStats();
+}
+
+// ===== NAVIGATION =====
+function showPage(page, el){
+  document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  const titles = {dashboard:'لوحة التحكم',  'add-news':'إضافة خبر جديد', 'news-manage':'إدارة الأخبار', settings:'الإعدادات'};
+  const icons  = {dashboard:'🏠', 'add-news':'➕', 'news-manage':'📋', settings:'⚙️'};
+  document.getElementById('topbar-title').innerHTML = (icons[page]||'')+ ' <span>'+(titles[page]||'')+'</span>';
+  if(page === 'news-manage') renderTable();
+  if(page === 'add-news' && editingId === null) resetForm();
+  // close mobile sidebar
+  document.getElementById('sidebar').classList.remove('mob-open');
+}
+
+function setActiveNav(page){
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const map = {dashboard:0,'news-manage':1,'add-news':2,settings:3};
+  const items = document.querySelectorAll('.nav-item');
+  if(items[map[page]]) items[map[page]].classList.add('active');
+}
+
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('mob-open');
+}
+
+// ===== TABS =====
+function switchTab(name, el){
+  document.querySelectorAll('[id^=tab-]').forEach(t=>t.style.display='none');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+name).style.display='block';
+  el.classList.add('active');
+  if(name==='preview-tab') livePreview();
+  if(name==='code-tab') generateCode();
+}
+
+// ===== CHAR COUNTER =====
+function updateCharCount(el, ccId, max){
+  const len = el.value.length;
+  const cc = document.getElementById(ccId);
+  cc.textContent = len+' / '+max;
+  cc.className = 'char-counter' + (len > max*0.9?' warn':'') + (len >= max?' over':'');
+}
+
+// ===== LIVE PREVIEW =====
+function livePreview(){
+  const title = document.getElementById('f-title').value || 'عنوان الخبر';
+  const cat   = document.getElementById('f-cat').value   || 'تصنيف';
+  const date  = document.getElementById('f-date').value  || 'التاريخ';
+  const exc   = document.getElementById('f-excerpt').value || 'مقتطف الخبر...';
+  const cont  = document.getElementById('f-content').value || 'محتوى الخبر الكامل...';
+  const img   = document.getElementById('f-img').value;
+
+  document.getElementById('prev-title').textContent = title;
+  document.getElementById('prev-cat-badge').textContent = cat;
+  document.getElementById('prev-date').textContent = date;
+  document.getElementById('prev-excerpt').textContent = exc;
+
+  document.getElementById('prev-modal-title').textContent = title;
+  document.getElementById('prev-modal-cat').textContent = cat;
+  document.getElementById('prev-modal-date').textContent = date;
+  document.getElementById('prev-modal-content').textContent = cont;
+
+  const imgArea = document.getElementById('prev-img-area');
+  const mImgArea = document.getElementById('prev-modal-img');
+  if(img){
+    imgArea.innerHTML = `<img src="${img}" style="width:100%;height:160px;object-fit:cover" onerror="this.parentElement.innerHTML='🖼️'"/>`;
+    mImgArea.innerHTML = `<img src="${img}" style="width:100%;height:160px;object-fit:cover" onerror="this.parentElement.innerHTML='🖼️'"/>`;
+  } else {
+    imgArea.innerHTML = '🖼️';
+    mImgArea.innerHTML = '🖼️';
+  }
+}
+
+// ===== GENERATE CODE =====
+function generateCode(){
+  const news = newsData[newsData.length-1];
+  if(!news){document.getElementById('code-card').textContent='أضف خبراً أولاً';return;}
+  const last = news;
+  const fnName = 'openNewsN'+last.id;
+  const modalId = 'nmo-n'+last.id;
+
+  const cardCode = `<div class="ncard rv d1">
+  <div class="nbar"></div>
+  <div class="nimg"><img decoding="async" alt="${escH(last.title)}" loading="lazy" src="${escH(last.image||'')}"/></div>
+  <div class="nbody">
+    <div class="nmeta"><span class="ncat">${escH(last.category)}</span><span class="ndot"></span><span class="ndate">${escH(last.date)}</span></div>
+    <h3 class="nh">${escH(last.title)}</h3>
+    <p class="nex">${escH(last.excerpt)}</p>
+    <button class="nread" onclick="${fnName}()">اقرأ المزيد ←</button>
+  </div>
+</div>`;
+
+  const contentLines = (last.content||'').split('\n').filter(l=>l.trim()).map(l=>`<p class="nmo-txt">${escH(l)}</p>`).join('\n');
+
+  const modalCode = `<!-- نافذة خبر: ${escH(last.title)} -->
+<div id="${modalId}" style="display:none;position:fixed;inset:0;z-index:800;background:rgba(8,4,2,.9);backdrop-filter:blur(7px);overflow-y:auto;padding:20px 16px">
+<div class="nmo-box">
+<button class="nmo-close" onclick="document.getElementById('${modalId}').style.display='none'">✕</button>
+<div class="nmo-hero"><img decoding="async" alt="${escH(last.title)}" loading="lazy" src="${escH(last.image||'')}"/></div>
+<div class="nmo-body">
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+<span class="nmo-tag">${escH(last.category)}</span>
+<span style="font-size:12px;color:#aaa">${escH(last.date)}</span>
+</div>
+<h2 class="nmo-h">${escH(last.title)}</h2>
+<div class="nmo-dv"></div>
+${contentLines}
+</div>
+</div>
+</div>
+<script>
+function ${fnName}(){
+  document.getElementById('${modalId}').style.display='block';
+  document.body.style.overflow='hidden';
+}
+document.getElementById('${modalId}').addEventListener('click',function(e){
+  if(e.target===this){this.style.display='none';document.body.style.overflow='';}
+});
+<\/script>`;
+
+  document.getElementById('code-card').textContent = cardCode;
+  document.getElementById('code-modal').textContent = modalCode;
+}
+
+function escH(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function copyCode(id){
+  const text = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(()=>showToast('✅ تم نسخ الكود!','success')).catch(()=>{
+    const el = document.createElement('textarea');
+    el.value = text; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el);
+    showToast('✅ تم نسخ الكود!','success');
+  });
+}
+
+// ===== SAVE NEWS =====
+function saveNews(){
+  const title = document.getElementById('f-title').value.trim();
+  const cat   = document.getElementById('f-cat').value;
+  const date  = document.getElementById('f-date').value.trim();
+  const exc   = document.getElementById('f-excerpt').value.trim();
+  const cont  = document.getElementById('f-content').value.trim();
+  const img   = document.getElementById('f-img').value.trim();
+  const status= document.getElementById('f-status').value;
+
+  if(!title){showToast('❌ الرجاء إدخال عنوان الخبر','error');document.getElementById('f-title').focus();return;}
+  if(!cat){showToast('❌ الرجاء اختيار التصنيف','error');document.getElementById('f-cat').focus();return;}
+  if(!date){showToast('❌ الرجاء إدخال التاريخ','error');document.getElementById('f-date').focus();return;}
+
+  if(editingId !== null){
+    const idx = newsData.findIndex(n=>n.id===editingId);
+    if(idx > -1){
+      newsData[idx] = {...newsData[idx], title, category:cat, date, excerpt:exc, content:cont, image:img, status};
+      showToast('✅ تم تعديل الخبر بنجاح','success');
+      editingId = null;
+    }
+  } else {
+    const newItem = {id:nextId++, title, category:cat, date, excerpt:exc, content:cont, image:img, status, fn:'openNews'};
+    newsData.push(newItem);
+    showToast('✅ تم حفظ الخبر بنجاح!','success');
+    addActivity(`تمت إضافة خبر "${title}"`);
+  }
+
+  saveToStorage();
+  generateCode();
+  // Switch to code tab
+  switchTab('code-tab', document.querySelectorAll('.tab')[2]);
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===2));
+}
+
+function resetForm(){
+  ['f-title','f-date','f-excerpt','f-content','f-img'].forEach(id=>{
+    document.getElementById(id).value='';
+  });
+  document.getElementById('f-cat').value='';
+  document.getElementById('f-status').value='published';
+  document.getElementById('cc-title').textContent='0 / 100';
+  document.getElementById('cc-exc').textContent='0 / 250';
+  editingId = null;
+  livePreview();
+}
+
+// ===== RENDER TABLE =====
+function renderTable(){
+  const tbody = document.getElementById('news-table-body');
+  const search= (document.getElementById('search-input').value||'').toLowerCase();
+  let list = newsData.filter(n=>{
+    if(currentFilter !== 'all' && n.status !== currentFilter) return false;
+    if(search && !n.title.includes(search) && !n.category.includes(search)) return false;
+    return true;
+  });
+
+  document.getElementById('empty-state').style.display = list.length ? 'none' : 'block';
+
+  const tagMap = {
+    'تميز':'tag-tameez','وعي رقمي':'tag-digital','رياضة ذهنية':'tag-sport','تربوي':'tag-tarbawi'
+  };
+
+  tbody.innerHTML = list.map((n,i)=>`
+    <tr>
+      <td style="color:var(--text2);font-size:12px">${i+1}</td>
+      <td>
+        <div class="news-title-cell">
+          <div class="news-thumb">${n.image?`<img src="${escH(n.image)}" onerror="this.parentElement.innerHTML='📰'"/>`:'📰'}</div>
+          <div>
+            <div class="news-title-text">${escH(n.title)}</div>
+            <div class="news-title-sub">${escH(n.excerpt||'').substring(0,60)}${(n.excerpt||'').length>60?'...':''}</div>
+          </div>
+        </div>
+      </td>
+      <td><span class="tag ${tagMap[n.category]||'tag-general'}">${escH(n.category)}</span></td>
+      <td style="font-size:12px;color:var(--text2)">${escH(n.date)}</td>
+      <td>
+        <span class="status-dot ${n.status==='published'?'status-pub':'status-draft'}"></span>
+        <span style="font-size:12px;color:${n.status==='published'?'var(--green)':'var(--orange)'}">${n.status==='published'?'منشور':'مسودة'}</span>
+      </td>
+      <td>
+        <div class="action-btns">
+          <button class="act-btn act-view" title="معاينة" onclick="previewNews(${n.id})">👁️</button>
+          <button class="act-btn act-edit" title="تعديل" onclick="editNews(${n.id})">✏️</button>
+          <button class="act-btn act-toggle" title="تبديل الحالة" onclick="toggleStatus(${n.id})">${n.status==='published'?'⏸':'▶️'}</button>
+          <button class="act-btn act-del" title="حذف" onclick="askDelete(${n.id})">🗑️</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function filterNews(){renderTable();}
+function filterByStatus(status, el){
+  currentFilter = status;
+  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  renderTable();
+}
+
+// ===== EDIT =====
+function editNews(id){
+  const n = newsData.find(x=>x.id===id);
+  if(!n) return;
+  editingId = id;
+  document.getElementById('f-title').value   = n.title;
+  document.getElementById('f-cat').value     = n.category;
+  document.getElementById('f-date').value    = n.date;
+  document.getElementById('f-excerpt').value = n.excerpt;
+  document.getElementById('f-content').value = n.content;
+  document.getElementById('f-img').value     = n.image || '';
+  document.getElementById('f-status').value  = n.status;
+  updateCharCount(document.getElementById('f-title'),'cc-title',100);
+  updateCharCount(document.getElementById('f-excerpt'),'cc-exc',250);
+  showPage('add-news',null);
+  setActiveNav('add-news');
+  switchTab('form', document.querySelectorAll('.tab')[0]);
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===0));
+  showToast('✏️ جاري تعديل الخبر...','');
+  livePreview();
+}
+
+// ===== TOGGLE STATUS =====
+function toggleStatus(id){
+  const n = newsData.find(x=>x.id===id);
+  if(!n) return;
+  n.status = n.status === 'published' ? 'draft' : 'published';
+  saveToStorage();
+  renderTable();
+  showToast(`${n.status==='published'?'✅ تم نشر الخبر':'⏸ تم تحويله لمسودة'}`,'success');
+}
+
+// ===== DELETE =====
+function askDelete(id){
+  deleteId = id;
+  document.getElementById('confirm-overlay').classList.add('open');
+}
+function closeConfirm(){
+  document.getElementById('confirm-overlay').classList.remove('open');
+  deleteId = null;
+}
+function confirmDelete(){
+  if(deleteId === null) return;
+  newsData = newsData.filter(n => n.id !== deleteId);
+  saveToStorage();
+  renderTable();
+  closeConfirm();
+  showToast('🗑️ تم حذف الخبر','error');
+}
+
+// ===== PREVIEW MODAL =====
+function previewNews(id){
+  const n = newsData.find(x=>x.id===id);
+  if(!n) return;
+  document.getElementById('po-title').textContent = n.title;
+  document.getElementById('po-tag').textContent = n.category;
+  document.getElementById('po-date').textContent = n.date;
+  document.getElementById('po-content').textContent = n.content;
+
+  const ph = document.getElementById('po-img-ph');
+  if(n.image){
+    ph.innerHTML = `<img src="${escH(n.image)}" style="width:100%;height:100%;object-fit:cover;border-radius:14px 14px 0 0" onerror="this.parentElement.innerHTML='🖼️'"/>`;
+  } else {
+    ph.textContent = '🖼️';
+  }
+  document.getElementById('preview-overlay').classList.add('open');
+}
+function closePreview(){
+  document.getElementById('preview-overlay').classList.remove('open');
+}
+
+// ===== TOAST =====
+function showToast(msg, type){
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = 'toast '+(type||'');
+  toast.innerHTML = `<span class="toast-icon">${type==='success'?'✅':type==='error'?'❌':'ℹ️'}</span><span>${msg}</span>`;
+  container.appendChild(toast);
+  setTimeout(()=>{toast.style.opacity='0';toast.style.transition='opacity .4s';setTimeout(()=>toast.remove(),400);}, 3000);
+}
+
+// ===== ACTIVITY =====
+function addActivity(text){
+  const list = document.getElementById('activity-list');
+  const item = document.createElement('div');
+  item.className = 'activity-item';
+  const now = new Date();
+  item.innerHTML = `<div class="activity-dot"></div><div><div class="activity-text">${text}</div><div class="activity-time">الآن</div></div>`;
+  list.prepend(item);
+}
+
+// ===== STATS =====
+function updateStats(){
+  const total = newsData.length;
+  const pub   = newsData.filter(n=>n.status==='published').length;
+  const draft = newsData.filter(n=>n.status==='draft').length;
+  document.getElementById('total-news-stat').textContent = total;
+  document.getElementById('pub-news-stat').textContent   = pub;
+  document.getElementById('draft-news-stat').textContent = draft;
+  document.getElementById('news-count-badge').textContent = total;
+}
+
+// ===== KEYBOARD SHORTCUTS =====
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape'){
+    document.getElementById('preview-overlay').classList.remove('open');
+    document.getElementById('confirm-overlay').classList.remove('open');
+    document.getElementById('sidebar').classList.remove('mob-open');
+  }
+});
+document.getElementById('preview-overlay').addEventListener('click',function(e){if(e.target===this)closePreview();});
+document.getElementById('confirm-overlay').addEventListener('click',function(e){if(e.target===this)closeConfirm();});
+
+// ===== INIT =====
+updateStats();
+</script>
+</body>
+</html>
