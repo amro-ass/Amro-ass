@@ -1,0 +1,28 @@
+{
+  "name": "amro-ass",
+  "version": "1.0.0",
+  "description": "Amro Ass School Website with Vercel Web Analytics",
+  "main": "sw.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amro-ass/Amro-ass.git"
+  },
+  "keywords": [
+    "education",
+    "school",
+    "website",
+    "vercel-analytics"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/amro-ass/Amro-ass/issues"
+  },
+  "homepage": "https://github.com/amro-ass/Amro-ass#readme",
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
+  }
+}
